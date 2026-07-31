@@ -41,7 +41,7 @@ local RageLibrary = {
     },
     Icons = {
         Logo            = "rbxassetid://122540234795087",
-        BackgroundImage = "rbxassetid://8372959577",
+        BackgroundImage = "rbxassetid://5510463866",
         Combat          = "rbxassetid://12614416478",      
         Movement        = "rbxassetid://136160678435000", 
         Visuals         = "rbxassetid://102976018150012", 
@@ -292,6 +292,11 @@ TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
 
+-- Play Init Sound on first frame (after GUI is ready)
+task.defer(function()
+    RageLibrary:PlaySound("Init")
+end)
+
 -- Live Metrics Updater
 local frameCount = 0
 local lastFpsCheck = tick()
@@ -351,20 +356,33 @@ function RageLibrary:CreateWindow(config)
     Sidebar.Size = UDim2.new(0, 165, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
     Sidebar.BorderSizePixel = 0
+    Sidebar.ClipsDescendants = true
     Sidebar.Parent = MainFrame
     addCorner(Sidebar, 8)
 
+    -- Sidebar Background Wallpaper
+    local SidebarBg = Instance.new("ImageLabel")
+    SidebarBg.Name = "SidebarBg"
+    SidebarBg.Size = UDim2.new(1, 0, 1, 0)
+    SidebarBg.Position = UDim2.new(0, 0, 0, 0)
+    SidebarBg.BackgroundTransparency = 1
+    SidebarBg.Image = "rbxassetid://5510463866"
+    SidebarBg.ImageTransparency = 0.5
+    SidebarBg.ScaleType = Enum.ScaleType.Crop
+    SidebarBg.ZIndex = 0
+    SidebarBg.Parent = Sidebar
+
     local SidebarLogo = Instance.new("ImageLabel")
     SidebarLogo.Size = UDim2.new(0, 22, 0, 22)
-    SidebarLogo.Position = UDim2.new(0, 10, 0, 12)
+    SidebarLogo.Position = UDim2.new(0, 16, 0, 12)
     SidebarLogo.BackgroundTransparency = 1
     SidebarLogo.Image = RageLibrary.Icons.Logo
     SidebarLogo.ImageColor3 = RageLibrary.Theme.Accent
     SidebarLogo.Parent = Sidebar
 
     local LogoTitle = Instance.new("TextLabel")
-    LogoTitle.Size = UDim2.new(1, -40, 0, 24)
-    LogoTitle.Position = UDim2.new(0, 36, 0, 11)
+    LogoTitle.Size = UDim2.new(1, -50, 0, 24)
+    LogoTitle.Position = UDim2.new(0, 44, 0, 11)
     LogoTitle.BackgroundTransparency = 1
     LogoTitle.Font = RageLibrary.Fonts.Header
     LogoTitle.Text = winTitle
@@ -374,8 +392,8 @@ function RageLibrary:CreateWindow(config)
     LogoTitle.Parent = Sidebar
 
     local LogoSub = Instance.new("TextLabel")
-    LogoSub.Size = UDim2.new(1, -40, 0, 16)
-    LogoSub.Position = UDim2.new(0, 36, 0, 31)
+    LogoSub.Size = UDim2.new(1, -50, 0, 16)
+    LogoSub.Position = UDim2.new(0, 44, 0, 31)
     LogoSub.BackgroundTransparency = 1
     LogoSub.Font = RageLibrary.Fonts.Label
     LogoSub.Text = winSubTitle
@@ -563,7 +581,17 @@ function RageLibrary:CreateWindow(config)
         TabObj.Indicator = TabIndicator
 
         if #WindowObj.Tabs == 0 then
-            selectTab()
+            -- First tab: switch without playing Click sound (Init already played)
+            for _, t in ipairs(WindowObj.Tabs) do
+                t.Page.Visible = false
+                t.Indicator.Visible = false
+            end
+            TabPage.Visible = true
+            TabIndicator.Visible = true
+            smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.CardHover })
+            smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
+            if TabIconImg then smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.Accent }) end
+            WindowObj.ActiveTab = TabObj
         end
 
         table.insert(WindowObj.Tabs, TabObj)
@@ -693,7 +721,7 @@ function RageLibrary:CreateWindow(config)
                             KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                         elseif bindMode == "Hold" then
                             KeyBadge.Text = "[" .. kName .. ":Hold]"
-                            KeyBadge.TextColor3 = Color3.fromRGB(255, 180, 60)
+                            KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                         else
                             KeyBadge.Text = "[" .. kName .. "]"
                             KeyBadge.TextColor3 = RageLibrary.Theme.Text
@@ -812,14 +840,16 @@ function RageLibrary:CreateWindow(config)
                     end)
                 end
 
-                -- Toggle Hover Animation (Clean Background Highlight, No Harsh Red Strokes)
+                -- Toggle Hover Animation
                 ToggleRow.MouseEnter:Connect(function()
                     smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
-                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                    smoothTween(ToggleStroke, DUR_FAST, { Color = Color3.fromRGB(80, 18, 26) })
                 end)
                 ToggleRow.MouseLeave:Connect(function()
                     smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                    smoothTween(ToggleStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 ToggleRow.MouseButton1Click:Connect(function()
@@ -920,7 +950,7 @@ function RageLibrary:CreateWindow(config)
                 ValBadge.BackgroundTransparency = 1
                 ValBadge.Font = RageLibrary.Fonts.Badge
                 ValBadge.Text = tostring(currentVal) .. suffix
-                ValBadge.TextColor3 = RageLibrary.Theme.Accent
+                ValBadge.TextColor3 = RageLibrary.Theme.Text
                 ValBadge.TextSize = 9.5
                 ValBadge.Parent = ValBadgeHolder
 
@@ -954,11 +984,13 @@ function RageLibrary:CreateWindow(config)
 
                 SliderRow.MouseEnter:Connect(function()
                     smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
-                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                    smoothTween(SliderStroke, DUR_FAST, { Color = Color3.fromRGB(80, 18, 26) })
                 end)
                 SliderRow.MouseLeave:Connect(function()
                     smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                    smoothTween(SliderStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 local isDragging = false
@@ -1041,13 +1073,15 @@ function RageLibrary:CreateWindow(config)
 
                 DropRow.MouseEnter:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
-                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                    smoothTween(DropRowStroke, DUR_FAST, { Color = Color3.fromRGB(80, 18, 26) })
                 end)
                 DropRow.MouseLeave:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 -- Unclipped Floating Dropdown Menu Container
@@ -1081,7 +1115,7 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isSel and (" ✓ " .. tostring(opt)) or ("   " .. tostring(opt))
-                        OptBtn.TextColor3 = isSel and RageLibrary.Theme.Accent or RageLibrary.Theme.Text
+                        OptBtn.TextColor3 = RageLibrary.Theme.Text
                         OptBtn.TextSize = 9.5
                         OptBtn.TextXAlignment = Enum.TextXAlignment.Left
                         OptBtn.ZIndex = 10001
@@ -1195,13 +1229,15 @@ function RageLibrary:CreateWindow(config)
 
                 DropRow.MouseEnter:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
-                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                    smoothTween(DropRowStroke, DUR_FAST, { Color = Color3.fromRGB(80, 18, 26) })
                 end)
                 DropRow.MouseLeave:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 -- Unclipped Floating MultiSelect Container
@@ -1235,7 +1271,7 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isChecked and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
-                        OptBtn.TextColor3 = isChecked and RageLibrary.Theme.Accent or RageLibrary.Theme.Text
+                        OptBtn.TextColor3 = RageLibrary.Theme.Text
                         OptBtn.TextSize = 9.5
                         OptBtn.TextXAlignment = Enum.TextXAlignment.Left
                         OptBtn.ZIndex = 10001
@@ -1256,7 +1292,7 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.MouseButton1Click:Connect(function()
                             selectedMap[opt] = not selectedMap[opt]
                             OptBtn.Text = selectedMap[opt] and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
-                            OptBtn.TextColor3 = selectedMap[opt] and RageLibrary.Theme.Accent or RageLibrary.Theme.Text
+                            OptBtn.TextColor3 = RageLibrary.Theme.Text
                             OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                             DropBtn.Text = "  " .. getSummary() .. "  ▼"
                             RageLibrary:PlaySound(selectedMap[opt] and "ToggleOn" or "ToggleOff")
