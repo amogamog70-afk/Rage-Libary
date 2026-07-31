@@ -141,7 +141,14 @@ function RageLibrary:PlaySound(soundName)
         s.Volume = 0.5
         s.Parent = game:GetService("SoundService")
         s:Play()
-        task.delay(2, function() s:Destroy() end)
+        -- Wait for sound to fully finish before destroying
+        s.Ended:Connect(function()
+            task.delay(0.5, function() s:Destroy() end)
+        end)
+        -- Safety fallback: destroy after 3 minutes max
+        task.delay(180, function()
+            if s and s.Parent then s:Destroy() end
+        end)
     end)
 end
 
@@ -340,7 +347,7 @@ function RageLibrary:CreateWindow(config)
 
     -- Entrance animation: slide up + fade in
     TweenService:Create(MainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0.18,
+        BackgroundTransparency = 0.08,
         Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
     }):Play()
 
@@ -362,7 +369,7 @@ function RageLibrary:CreateWindow(config)
     Sidebar.Name = "Sidebar"
     Sidebar.Size = UDim2.new(0, 165, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
-    Sidebar.BackgroundTransparency = 0.25
+    Sidebar.BackgroundTransparency = 0.10
     Sidebar.BorderSizePixel = 0
     Sidebar.ClipsDescendants = true
     Sidebar.Parent = MainFrame
@@ -624,7 +631,7 @@ function RageLibrary:CreateWindow(config)
             -- Card entrance animation
             local cardIdx = #parentCol:GetChildren()
             task.delay(cardIdx * 0.05, function()
-                smoothTween(Card, 0.3, { BackgroundTransparency = 0.25 })
+                smoothTween(Card, 0.3, { BackgroundTransparency = 0.10 })
             end)
 
             local CardTitle = Instance.new("TextLabel")
@@ -678,7 +685,7 @@ function RageLibrary:CreateWindow(config)
                 -- Row entrance animation (fade in)
                 local rowIdx = #ItemsHolder:GetChildren()
                 task.delay(0.08 + rowIdx * 0.04, function()
-                    smoothTween(ToggleRow, 0.25, { BackgroundTransparency = 0.3 })
+                    smoothTween(ToggleRow, 0.25, { BackgroundTransparency = 0.12 })
                 end)
 
                 local Label = Instance.new("TextLabel")
@@ -951,7 +958,7 @@ function RageLibrary:CreateWindow(config)
                 local SliderStroke = addStroke(SliderRow, RageLibrary.Theme.Stroke, 1)
                 local sliderRowIdx = #ItemsHolder:GetChildren()
                 task.delay(0.08 + sliderRowIdx * 0.04, function()
-                    smoothTween(SliderRow, 0.25, { BackgroundTransparency = 0.3 })
+                    smoothTween(SliderRow, 0.25, { BackgroundTransparency = 0.12 })
                 end)
 
                 local Label = Instance.new("TextLabel")
@@ -1075,7 +1082,7 @@ function RageLibrary:CreateWindow(config)
                 local DropRowStroke = addStroke(DropRow, RageLibrary.Theme.Stroke, 1)
                 local dropRowIdx = #ItemsHolder:GetChildren()
                 task.delay(0.08 + dropRowIdx * 0.04, function()
-                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.3 })
+                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.12 })
                 end)
 
                 local Label = Instance.new("TextLabel")
@@ -1236,7 +1243,7 @@ function RageLibrary:CreateWindow(config)
                 local DropRowStroke = addStroke(DropRow, RageLibrary.Theme.Stroke, 1)
                 local msRowIdx = #ItemsHolder:GetChildren()
                 task.delay(0.08 + msRowIdx * 0.04, function()
-                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.3 })
+                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.12 })
                 end)
 
                 local Label = Instance.new("TextLabel")
