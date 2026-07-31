@@ -15,9 +15,9 @@ local RageLibrary = {
             RowHover = Color3.fromRGB(24, 24, 32),        -- Soft Row Highlight
             Accent = Color3.fromRGB(255, 45, 70),         -- Eye-Friendly Vivid Crimson Red (#FF2D46)
             AccentDim = Color3.fromRGB(180, 20, 35),
-            Text = Color3.fromRGB(255, 128, 147),         -- Eye-Friendly Soft Rose Red (#FF8093)
-            TextDim = Color3.fromRGB(214, 90, 110),       -- Muted Soft Crimson (#D65A6E)
-            TextHover = Color3.fromRGB(255, 230, 233),    -- Soft Glowing Ruby White-Red (#FFE6E9)
+            Text = Color3.fromRGB(255, 255, 255),         -- Pure Crisp White (#FFFFFF)
+            TextDim = Color3.fromRGB(220, 225, 235),       -- Light Silver White (#DCE1EB)
+            TextHover = Color3.fromRGB(255, 255, 255),    -- Pure White Glow (#FFFFFF)
             Stroke = Color3.fromRGB(38, 38, 48),          -- Dark Graphite
             StrokeActive = Color3.fromRGB(255, 45, 70),     -- Crimson Glow
             StrokeHover = Color3.fromRGB(255, 90, 110),
@@ -196,6 +196,7 @@ local WMarkLayout = Instance.new("UIListLayout")
 WMarkLayout.FillDirection = Enum.FillDirection.Horizontal
 WMarkLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 WMarkLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+WMarkLayout.SortOrder = Enum.SortOrder.LayoutOrder
 WMarkLayout.Padding = UDim.new(0, 6)
 WMarkLayout.Parent = WMarkContent
 
@@ -205,6 +206,7 @@ LogoImg.Size = UDim2.new(0, 14, 0, 14)
 LogoImg.BackgroundTransparency = 1
 LogoImg.Image = RageLibrary.Icons.Logo
 LogoImg.ImageColor3 = RageLibrary.Theme.Accent
+LogoImg.LayoutOrder = 1
 LogoImg.Parent = WMarkContent
 
 local WMarkName = Instance.new("TextLabel")
@@ -212,15 +214,17 @@ WMarkName.Size = UDim2.new(0, 75, 1, 0)
 WMarkName.BackgroundTransparency = 1
 WMarkName.Font = Enum.Font.GothamBold
 WMarkName.Text = "Spookie.UI"
-WMarkName.TextColor3 = RageLibrary.Theme.Accent
+WMarkName.TextColor3 = Color3.fromRGB(255, 255, 255)
 WMarkName.TextSize = 10
 WMarkName.TextXAlignment = Enum.TextXAlignment.Left
+WMarkName.LayoutOrder = 2
 WMarkName.Parent = WMarkContent
 
--- 2. Profile Avatar & Player Username
+-- 2. Profile Avatar & Player Username (Avatar IMMEDIATELY to the left of Nickname!)
 local AvatarHolder = Instance.new("Frame")
 AvatarHolder.Size = UDim2.new(0, 14, 0, 14)
 AvatarHolder.BackgroundTransparency = 1
+AvatarHolder.LayoutOrder = 3
 AvatarHolder.Parent = WMarkContent
 
 local AvatarImg = Instance.new("ImageLabel")
@@ -246,10 +250,11 @@ UserLabel.Size = UDim2.new(0, 85, 1, 0)
 UserLabel.BackgroundTransparency = 1
 UserLabel.Font = Enum.Font.GothamMedium
 UserLabel.Text = LocalPlayer and LocalPlayer.Name or "User"
-UserLabel.TextColor3 = RageLibrary.Theme.Text
+UserLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 UserLabel.TextSize = 9.5
 UserLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserLabel.TextXAlignment = Enum.TextXAlignment.Left
+UserLabel.LayoutOrder = 4
 UserLabel.Parent = WMarkContent
 
 -- 3. FPS Counter
@@ -258,8 +263,9 @@ FPSLabel.Size = UDim2.new(0, 44, 1, 0)
 FPSLabel.BackgroundTransparency = 1
 FPSLabel.Font = Enum.Font.GothamBold
 FPSLabel.Text = "144 fps"
-FPSLabel.TextColor3 = RageLibrary.Theme.Accent
+FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 FPSLabel.TextSize = 9.5
+FPSLabel.LayoutOrder = 5
 FPSLabel.Parent = WMarkContent
 
 -- 4. Ping Counter
@@ -270,6 +276,7 @@ PingLabel.Font = Enum.Font.GothamMedium
 PingLabel.Text = "15 ms"
 PingLabel.TextColor3 = RageLibrary.Theme.TextDim
 PingLabel.TextSize = 9.5
+PingLabel.LayoutOrder = 6
 PingLabel.Parent = WMarkContent
 
 -- 5. Real-Time Clock
@@ -280,6 +287,7 @@ TimeLabel.Font = Enum.Font.GothamMedium
 TimeLabel.Text = os.date("%H:%M:%S")
 TimeLabel.TextColor3 = RageLibrary.Theme.TextDim
 TimeLabel.TextSize = 9.5
+TimeLabel.LayoutOrder = 7
 TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
@@ -360,7 +368,7 @@ function RageLibrary:CreateWindow(config)
     LogoTitle.BackgroundTransparency = 1
     LogoTitle.Font = RageLibrary.Fonts.Header
     LogoTitle.Text = winTitle
-    LogoTitle.TextColor3 = RageLibrary.Theme.Accent
+    LogoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     LogoTitle.TextSize = 13
     LogoTitle.TextXAlignment = Enum.TextXAlignment.Left
     LogoTitle.Parent = Sidebar
@@ -574,7 +582,7 @@ function RageLibrary:CreateWindow(config)
             CardTitle.BackgroundTransparency = 1
             CardTitle.Font = RageLibrary.Fonts.Header
             CardTitle.Text = string.upper(secName)
-            CardTitle.TextColor3 = RageLibrary.Theme.Accent
+            CardTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
             CardTitle.TextSize = 10
             CardTitle.TextXAlignment = Enum.TextXAlignment.Left
             CardTitle.Parent = Card
@@ -601,7 +609,7 @@ function RageLibrary:CreateWindow(config)
             -- TOGGLE WITH RIGHT-CLICK KEYBIND MODE CONTEXT MENU (Hold / Toggle / Always)
             function SectionObj:AddToggle(cfg, legacyDefault, legacyCb)
                 local name = type(cfg) == "table" and cfg.Name or cfg
-                local state = (type(cfg) == "table" and cfg.Default) or (type(cfg) ~= "table" and legacyDefault) or false
+                local state = (type(cfg) == "table" and (cfg.Default == true)) or (type(cfg) ~= "table" and (legacyDefault == true)) or false
                 local callback = (type(cfg) == "table" and cfg.Callback) or legacyCb
                 local bindKey = type(cfg) == "table" and cfg.Keybind or nil
                 local bindMode = type(cfg) == "table" and (cfg.Mode or "Toggle") or "Toggle"
