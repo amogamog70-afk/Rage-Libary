@@ -194,7 +194,7 @@ Watermark.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = true
 Watermark.Parent = ScreenGui
-addCorner(Watermark, 6)
+addCorner(Watermark, 8)
 local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Stroke, 1)
 
 local WMarkContent = Instance.new("Frame")
@@ -314,7 +314,7 @@ KeybindWidget.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
 KeybindWidget.BorderSizePixel = 0
 KeybindWidget.ClipsDescendants = true
 KeybindWidget.Parent = ScreenGui
-addCorner(KeybindWidget, 6)
+addCorner(KeybindWidget, 8)
 addStroke(KeybindWidget, RageLibrary.Theme.Stroke, 1)
 makeDraggable(KeybindWidget, KeybindWidget)
 
@@ -769,6 +769,8 @@ function RageLibrary:CreateWindow(config)
                 local callback = (type(cfg) == "table" and cfg.Callback) or legacyCb
                 local bindKey = type(cfg) == "table" and cfg.Keybind or nil
                 local bindMode = type(cfg) == "table" and (cfg.Mode or "Toggle") or "Toggle"
+                local cpColor = type(cfg) == "table" and (cfg.Colorpicker or cfg.ColorPicker or cfg.Color) or nil
+                local cpCallback = type(cfg) == "table" and (cfg.ColorCallback or cfg.ColorpickerCallback) or nil
 
                 local ToggleRow = Instance.new("TextButton")
                 ToggleRow.Size = UDim2.new(1, 0, 0, 30)
@@ -787,7 +789,7 @@ function RageLibrary:CreateWindow(config)
                 end)
 
                 local Label = Instance.new("TextLabel")
-                Label.Size = UDim2.new(1, -125, 1, 0)
+                Label.Size = UDim2.new(1, -155, 1, 0)
                 Label.Position = UDim2.new(0, 10, 0, 0)
                 Label.BackgroundTransparency = 1
                 Label.Font = RageLibrary.Fonts.Label
@@ -797,10 +799,10 @@ function RageLibrary:CreateWindow(config)
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = ToggleRow
 
-                -- Controls Holder Container (Switch + Keybind Badge)
+                -- Controls Holder Container (Switch + Keybind Badge + Colorpicker)
                 local ControlsHolder = Instance.new("Frame")
-                ControlsHolder.Size = UDim2.new(0, 115, 1, 0)
-                ControlsHolder.Position = UDim2.new(1, -120, 0, 0)
+                ControlsHolder.Size = UDim2.new(0, 145, 1, 0)
+                ControlsHolder.Position = UDim2.new(1, -150, 0, 0)
                 ControlsHolder.BackgroundTransparency = 1
                 ControlsHolder.Parent = ToggleRow
 
@@ -811,12 +813,163 @@ function RageLibrary:CreateWindow(config)
                 ControlsLayout.Padding = UDim.new(0, 6)
                 ControlsLayout.Parent = ControlsHolder
 
+                -- Inline Colorpicker (rendered to the left of switch and keybind)
+                if cpColor then
+                    local currentColor = typeof(cpColor) == "Color3" and cpColor or Color3.fromRGB(255, 45, 70)
+                    local h, s, v = Color3.toHSV(currentColor)
+
+                    local ColorBadge = Instance.new("TextButton")
+                    ColorBadge.Size = UDim2.new(0, 26, 0, 15)
+                    ColorBadge.BackgroundColor3 = currentColor
+                    ColorBadge.BorderSizePixel = 0
+                    ColorBadge.LayoutOrder = 1
+                    ColorBadge.Text = ""
+                    ColorBadge.Parent = ControlsHolder
+                    addCorner(ColorBadge, 5)
+                    addStroke(ColorBadge, RageLibrary.Theme.Stroke, 1)
+
+                    local ColorPickerBox = Instance.new("Frame")
+                    ColorPickerBox.Name = "ColorPicker_" .. name
+                    ColorPickerBox.Size = UDim2.new(0, 160, 0, 150)
+                    ColorPickerBox.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
+                    ColorPickerBox.BorderSizePixel = 0
+                    ColorPickerBox.Visible = false
+                    ColorPickerBox.ZIndex = 25000
+                    ColorPickerBox.Parent = ScreenGui
+                    addCorner(ColorPickerBox, 6)
+                    addStroke(ColorPickerBox, RageLibrary.Theme.Stroke, 1.2)
+
+                    local SVBox = Instance.new("ImageLabel")
+                    SVBox.Size = UDim2.new(0, 120, 0, 120)
+                    SVBox.Position = UDim2.new(0, 10, 0, 10)
+                    SVBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                    SVBox.BorderSizePixel = 0
+                    SVBox.Image = "rbxassetid://4155801252"
+                    SVBox.ZIndex = 25001
+                    SVBox.Parent = ColorPickerBox
+                    addCorner(SVBox, 4)
+
+                    local SVCursor = Instance.new("Frame")
+                    SVCursor.Size = UDim2.new(0, 6, 0, 6)
+                    SVCursor.Position = UDim2.new(s, -3, 1 - v, -3)
+                    SVCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    SVCursor.BorderSizePixel = 0
+                    SVCursor.ZIndex = 25002
+                    SVCursor.Parent = SVBox
+                    addCorner(SVCursor, 3)
+                    addStroke(SVCursor, Color3.fromRGB(0, 0, 0), 1)
+
+                    local HueBox = Instance.new("Frame")
+                    HueBox.Size = UDim2.new(0, 14, 0, 120)
+                    HueBox.Position = UDim2.new(0, 136, 0, 10)
+                    HueBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    HueBox.BorderSizePixel = 0
+                    HueBox.ZIndex = 25001
+                    HueBox.Parent = ColorPickerBox
+                    addCorner(HueBox, 4)
+
+                    local HueGradient = Instance.new("UIGradient")
+                    HueGradient.Rotation = 90
+                    HueGradient.Color = ColorSequence.new({
+                        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
+                        ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
+                        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
+                        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)),
+                        ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+                        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
+                        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))
+                    })
+                    HueGradient.Parent = HueBox
+
+                    local HueCursor = Instance.new("Frame")
+                    HueCursor.Size = UDim2.new(1, 4, 0, 3)
+                    HueCursor.Position = UDim2.new(0, -2, h, -1)
+                    HueCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    HueCursor.BorderSizePixel = 0
+                    HueCursor.ZIndex = 25002
+                    HueCursor.Parent = HueBox
+                    addCorner(HueCursor, 2)
+
+                    local HexLabel = Instance.new("TextLabel")
+                    HexLabel.Size = UDim2.new(1, -20, 0, 14)
+                    HexLabel.Position = UDim2.new(0, 10, 0, 132)
+                    HexLabel.BackgroundTransparency = 1
+                    HexLabel.Font = RageLibrary.Fonts.Badge
+                    HexLabel.Text = "#" .. currentColor:ToHex()
+                    HexLabel.TextColor3 = RageLibrary.Theme.TextDim
+                    HexLabel.TextSize = 9
+                    HexLabel.ZIndex = 25001
+                    HexLabel.Parent = ColorPickerBox
+
+                    local function updateColor()
+                        currentColor = Color3.fromHSV(h, s, v)
+                        SVBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                        ColorBadge.BackgroundColor3 = currentColor
+                        HexLabel.Text = "#" .. currentColor:ToHex()
+                        if cpCallback then cpCallback(currentColor) end
+                    end
+
+                    local isDraggingSV = false
+                    local function updateSV(inputPos)
+                        local relX = math.clamp((inputPos.X - SVBox.AbsolutePosition.X) / SVBox.AbsoluteSize.X, 0, 1)
+                        local relY = math.clamp((inputPos.Y - SVBox.AbsolutePosition.Y) / SVBox.AbsoluteSize.Y, 0, 1)
+                        s = relX
+                        v = 1 - relY
+                        SVCursor.Position = UDim2.new(s, -3, 1 - v, -3)
+                        updateColor()
+                    end
+
+                    SVBox.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            isDraggingSV = true
+                            updateSV(input.Position)
+                        end
+                    end)
+
+                    local isDraggingHue = false
+                    local function updateHue(inputPos)
+                        local relY = math.clamp((inputPos.Y - HueBox.AbsolutePosition.Y) / HueBox.AbsoluteSize.Y, 0, 1)
+                        h = relY
+                        HueCursor.Position = UDim2.new(0, -2, h, -1)
+                        updateColor()
+                    end
+
+                    HueBox.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            isDraggingHue = true
+                            updateHue(input.Position)
+                        end
+                    end)
+
+                    UserInputService.InputChanged:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if isDraggingSV then updateSV(input.Position) end
+                            if isDraggingHue then updateHue(input.Position) end
+                        end
+                    end)
+
+                    UserInputService.InputEnded:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            isDraggingSV = false
+                            isDraggingHue = false
+                        end
+                    end)
+
+                    ColorBadge.MouseButton1Click:Connect(function()
+                        ColorPickerBox.Visible = not ColorPickerBox.Visible
+                        if ColorPickerBox.Visible then
+                            ColorPickerBox.Position = UDim2.new(0, ColorBadge.AbsolutePosition.X - 120, 0, ColorBadge.AbsolutePosition.Y + ColorBadge.AbsoluteSize.Y + 4)
+                            RageLibrary:PlaySound("Dropdown")
+                        end
+                    end)
+                end
+
                 -- Right Side Switch
                 local SwitchBg = Instance.new("Frame")
                 SwitchBg.Size = UDim2.new(0, 28, 0, 14)
                 SwitchBg.BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header
                 SwitchBg.BorderSizePixel = 0
-                SwitchBg.LayoutOrder = 2
+                SwitchBg.LayoutOrder = 3
                 SwitchBg.Parent = ControlsHolder
                 addCorner(SwitchBg, 7)
 
@@ -828,20 +981,17 @@ function RageLibrary:CreateWindow(config)
                 Knob.Parent = SwitchBg
                 addCorner(Knob, 5)
 
-                local KeyBadge = nil
-                local updateBadgeText = nil
-
-                if bindKey then
-                    KeyBadge = Instance.new("TextButton")
-                    KeyBadge.Size = UDim2.new(0, 64, 0, 18)
-                    KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
-                    KeyBadge.BorderSizePixel = 0
-                    KeyBadge.Font = RageLibrary.Fonts.Badge
-                    KeyBadge.LayoutOrder = 1
-                    KeyBadge.TextColor3 = RageLibrary.Theme.Text
-                    KeyBadge.TextSize = 8.5
-                    KeyBadge.Parent = ControlsHolder
-                    addCorner(KeyBadge, 4)
+                -- Always create KeyBadge (defaults to [ None ] if bindKey is nil)
+                KeyBadge = Instance.new("TextButton")
+                KeyBadge.Size = UDim2.new(0, 64, 0, 18)
+                KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
+                KeyBadge.BorderSizePixel = 0
+                KeyBadge.Font = RageLibrary.Fonts.Badge
+                KeyBadge.LayoutOrder = 2
+                KeyBadge.TextColor3 = RageLibrary.Theme.Text
+                KeyBadge.TextSize = 8.5
+                KeyBadge.Parent = ControlsHolder
+                addCorner(KeyBadge, 5)
 
                     local kbEntry = {
                         name = name,
@@ -869,7 +1019,10 @@ function RageLibrary:CreateWindow(config)
                         kbEntry.state = state
                         refreshKeybindWidget()
 
-                        if bindMode == "Always" then
+                        if not bindKey then
+                            KeyBadge.Text = "[ None ]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                        elseif bindMode == "Always" then
                             KeyBadge.Text = "[ Always ]"
                             KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                         elseif bindMode == "Hold" then
@@ -920,7 +1073,8 @@ function RageLibrary:CreateWindow(config)
                                     updateBadgeText()
                                     conn:Disconnect()
                                     isRebinding = false
-                                elseif input.KeyCode == Enum.KeyCode.Escape then
+                                elseif input.KeyCode == Enum.KeyCode.Escape or input.KeyCode == Enum.KeyCode.Backspace or input.KeyCode == Enum.KeyCode.Delete then
+                                    bindKey = nil
                                     updateBadgeText()
                                     conn:Disconnect()
                                     isRebinding = false
@@ -929,10 +1083,10 @@ function RageLibrary:CreateWindow(config)
                         end)
                     end)
 
-                    -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always)
+                    -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always / Unbind)
                     local ModeMenu = Instance.new("Frame")
                     ModeMenu.Name = "ModeMenu_" .. name
-                    ModeMenu.Size = UDim2.new(0, 95, 0, 72)
+                    ModeMenu.Size = UDim2.new(0, 95, 0, 94)
                     ModeMenu.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
                     ModeMenu.BorderSizePixel = 0
                     ModeMenu.Visible = false
@@ -946,7 +1100,7 @@ function RageLibrary:CreateWindow(config)
                     ModeLayout.Padding = UDim.new(0, 2)
                     ModeLayout.Parent = ModeMenu
 
-                    local modes = {"Toggle", "Hold", "Always"}
+                    local modes = {"Toggle", "Hold", "Always", "Unbind"}
                     for _, m in ipairs(modes) do
                         local MBtn = Instance.new("TextButton")
                         MBtn.Size = UDim2.new(1, -4, 0, 21)
@@ -974,7 +1128,12 @@ function RageLibrary:CreateWindow(config)
                         end)
 
                         MBtn.MouseButton1Click:Connect(function()
-                            bindMode = m
+                            if m == "Unbind" then
+                                bindKey = nil
+                                bindMode = "Toggle"
+                            else
+                                bindMode = m
+                            end
                             updateBadgeText()
                             ModeMenu.Visible = false
                             if bindMode == "Always" then
@@ -995,16 +1154,8 @@ function RageLibrary:CreateWindow(config)
 
                     local function isPointerOverGui(inputPos)
                         if not inputPos then return false end
-                        if MainFrame and MainFrame.Visible then
-                            local mPos = MainFrame.AbsolutePosition
-                            local mSize = MainFrame.AbsoluteSize
-                            if inputPos.X >= mPos.X and inputPos.X <= mPos.X + mSize.X and
-                               inputPos.Y >= mPos.Y and inputPos.Y <= mPos.Y + mSize.Y then
-                                return true
-                            end
-                        end
                         for _, child in ipairs(ScreenGui:GetChildren()) do
-                            if child:IsA("GuiObject") and child.Visible and child ~= MainFrame and child ~= Watermark then
+                            if child:IsA("GuiObject") and child.Visible then
                                 local cPos = child.AbsolutePosition
                                 local cSize = child.AbsoluteSize
                                 if inputPos.X >= cPos.X and inputPos.X <= cPos.X + cSize.X and
@@ -1177,7 +1328,7 @@ function RageLibrary:CreateWindow(config)
                 ValBadgeHolder.BackgroundColor3 = RageLibrary.Theme.Header
                 ValBadgeHolder.BorderSizePixel = 0
                 ValBadgeHolder.Parent = SliderRow
-                addCorner(ValBadgeHolder, 4)
+                addCorner(ValBadgeHolder, 5)
 
                 local ValBadge = Instance.new("TextLabel")
                 ValBadge.Size = UDim2.new(1, 0, 1, 0)
@@ -1314,7 +1465,7 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.ClipsDescendants = true
                 DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
                 DropBtn.Parent = DropRow
-                addCorner(DropBtn, 4)
+                addCorner(DropBtn, 5)
                 local DropBtnStroke = addStroke(DropBtn, RageLibrary.Theme.Stroke, 1)
 
                 DropRow.MouseEnter:Connect(function()
@@ -1475,7 +1626,7 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.ClipsDescendants = true
                 DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
                 DropBtn.Parent = DropRow
-                addCorner(DropBtn, 4)
+                addCorner(DropBtn, 5)
                 local DropBtnStroke = addStroke(DropBtn, RageLibrary.Theme.Stroke, 1)
 
                 DropRow.MouseEnter:Connect(function()
