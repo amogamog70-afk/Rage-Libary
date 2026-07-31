@@ -27,7 +27,7 @@ local RageLibrary = {
     Fonts = {
         Header = Enum.Font.GothamBold,
         Label = Enum.Font.GothamMedium,
-        Badge = Enum.Font.GothamBold,
+        Badge = Enum.Font.GothamMedium,
     },
     Sounds = {
         Init = "rbxassetid://85298897773513",
@@ -41,7 +41,7 @@ local RageLibrary = {
     },
     Icons = {
         Logo            = "rbxassetid://122540234795087",
-        BackgroundImage = "rbxassetid://17545565032",
+        BackgroundImage = "rbxassetid://8372959577",
         Combat          = "rbxassetid://12614416478",      
         Movement        = "rbxassetid://136160678435000", 
         Visuals         = "rbxassetid://102976018150012", 
@@ -173,15 +173,15 @@ ScreenGui.DisplayOrder = 99999999
 ScreenGui.Parent = ParentContainer
 
 -- =================================================================
--- BRAND-NEW ULTRA-FUTURISTIC WATERMARK WIDGET (100% REWRITTEN FROM SCRATCH)
+-- CLEAN & ELEGANT WATERMARK WIDGET
 -- =================================================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 420, 0, 28)
-Watermark.Position = UDim2.new(1, -430, 0, 12)
-Watermark.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
+Watermark.Size = UDim2.new(0, 390, 0, 26)
+Watermark.Position = UDim2.new(1, -400, 0, 12)
+Watermark.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
 Watermark.BorderSizePixel = 0
-Watermark.ClipsDescendants = false
+Watermark.ClipsDescendants = true
 Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
 local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1)
@@ -196,51 +196,47 @@ local WMarkLayout = Instance.new("UIListLayout")
 WMarkLayout.FillDirection = Enum.FillDirection.Horizontal
 WMarkLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 WMarkLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-WMarkLayout.Padding = UDim.new(0, 7)
+WMarkLayout.Padding = UDim.new(0, 6)
 WMarkLayout.Parent = WMarkContent
 
--- 1. Live Active Pulse Indicator
+-- 1. Pulse Indicator Dot
 local PulseDot = Instance.new("Frame")
-PulseDot.Size = UDim2.new(0, 8, 0, 8)
+PulseDot.Size = UDim2.new(0, 6, 0, 6)
 PulseDot.BackgroundColor3 = RageLibrary.Theme.Accent
 PulseDot.BorderSizePixel = 0
 PulseDot.Parent = WMarkContent
-addCorner(PulseDot, 4)
+addCorner(PulseDot, 3)
 
--- Pulsing animation
 task.spawn(function()
     while PulseDot and PulseDot.Parent do
-        smoothTween(PulseDot, 0.8, { BackgroundTransparency = 0.6 })
-        task.wait(0.8)
-        smoothTween(PulseDot, 0.8, { BackgroundTransparency = 0 })
-        task.wait(0.8)
+        smoothTween(PulseDot, 0.7, { BackgroundTransparency = 0.6 })
+        task.wait(0.7)
+        smoothTween(PulseDot, 0.7, { BackgroundTransparency = 0 })
+        task.wait(0.7)
     end
 end)
 
--- 2. Cheat Name Tag
+-- 2. Logo Icon & Name
+local LogoImg = Instance.new("ImageLabel")
+LogoImg.Size = UDim2.new(0, 14, 0, 14)
+LogoImg.BackgroundTransparency = 1
+LogoImg.Image = RageLibrary.Icons.Logo
+LogoImg.ImageColor3 = RageLibrary.Theme.Accent
+LogoImg.Parent = WMarkContent
+
 local WMarkName = Instance.new("TextLabel")
-WMarkName.Size = UDim2.new(0, 105, 1, 0)
+WMarkName.Size = UDim2.new(0, 95, 1, 0)
 WMarkName.BackgroundTransparency = 1
-WMarkName.Font = RageLibrary.Fonts.Header
+WMarkName.Font = Enum.Font.GothamBold
 WMarkName.Text = "PROJECT AURORA"
 WMarkName.TextColor3 = RageLibrary.Theme.Text
-WMarkName.TextSize = 10.5
+WMarkName.TextSize = 10
 WMarkName.TextXAlignment = Enum.TextXAlignment.Left
 WMarkName.Parent = WMarkContent
 
-local function addWMDivider()
-    local div = Instance.new("Frame")
-    div.Size = UDim2.new(0, 1, 0, 12)
-    div.BackgroundColor3 = RageLibrary.Theme.Stroke
-    div.BorderSizePixel = 0
-    div.Parent = WMarkContent
-end
-
-addWMDivider()
-
--- 3. Player Headshot Avatar + Username
+-- 3. Profile Avatar & Player Username
 local AvatarHolder = Instance.new("Frame")
-AvatarHolder.Size = UDim2.new(0, 16, 0, 16)
+AvatarHolder.Size = UDim2.new(0, 14, 0, 14)
 AvatarHolder.BackgroundTransparency = 1
 AvatarHolder.Parent = WMarkContent
 
@@ -249,7 +245,7 @@ AvatarImg.Size = UDim2.new(1, 0, 1, 0)
 AvatarImg.BackgroundTransparency = 1
 AvatarImg.Image = "rbxassetid://0"
 AvatarImg.Parent = AvatarHolder
-addCorner(AvatarImg, 8)
+addCorner(AvatarImg, 7)
 
 if LocalPlayer then
     pcall(function()
@@ -263,50 +259,44 @@ if LocalPlayer then
 end
 
 local UserLabel = Instance.new("TextLabel")
-UserLabel.Size = UDim2.new(0, 75, 1, 0)
+UserLabel.Size = UDim2.new(0, 85, 1, 0)
 UserLabel.BackgroundTransparency = 1
-UserLabel.Font = RageLibrary.Fonts.Badge
+UserLabel.Font = Enum.Font.GothamMedium
 UserLabel.Text = LocalPlayer and LocalPlayer.Name or "User"
 UserLabel.TextColor3 = RageLibrary.Theme.TextDim
-UserLabel.TextSize = 9
+UserLabel.TextSize = 9.5
 UserLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserLabel.TextXAlignment = Enum.TextXAlignment.Left
 UserLabel.Parent = WMarkContent
 
-addWMDivider()
-
--- 4. Dynamic FPS Counter
+-- 4. FPS Counter
 local FPSLabel = Instance.new("TextLabel")
-FPSLabel.Size = UDim2.new(0, 48, 1, 0)
+FPSLabel.Size = UDim2.new(0, 44, 1, 0)
 FPSLabel.BackgroundTransparency = 1
-FPSLabel.Font = RageLibrary.Fonts.Badge
+FPSLabel.Font = Enum.Font.GothamBold
 FPSLabel.Text = "144 fps"
 FPSLabel.TextColor3 = RageLibrary.Theme.Accent
-FPSLabel.TextSize = 9
+FPSLabel.TextSize = 9.5
 FPSLabel.Parent = WMarkContent
-
-addWMDivider()
 
 -- 5. Ping Counter
 local PingLabel = Instance.new("TextLabel")
-PingLabel.Size = UDim2.new(0, 40, 1, 0)
+PingLabel.Size = UDim2.new(0, 42, 1, 0)
 PingLabel.BackgroundTransparency = 1
-PingLabel.Font = RageLibrary.Fonts.Badge
+PingLabel.Font = Enum.Font.GothamMedium
 PingLabel.Text = "15 ms"
 PingLabel.TextColor3 = RageLibrary.Theme.TextDim
-PingLabel.TextSize = 9
+PingLabel.TextSize = 9.5
 PingLabel.Parent = WMarkContent
-
-addWMDivider()
 
 -- 6. Real-Time Clock
 local TimeLabel = Instance.new("TextLabel")
-TimeLabel.Size = UDim2.new(0, 52, 1, 0)
+TimeLabel.Size = UDim2.new(0, 48, 1, 0)
 TimeLabel.BackgroundTransparency = 1
-TimeLabel.Font = RageLibrary.Fonts.Badge
+TimeLabel.Font = Enum.Font.GothamMedium
 TimeLabel.Text = os.date("%H:%M:%S")
 TimeLabel.TextColor3 = RageLibrary.Theme.TextDim
-TimeLabel.TextSize = 9
+TimeLabel.TextSize = 9.5
 TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
@@ -908,7 +898,7 @@ function RageLibrary:CreateWindow(config)
                 Label.Font = RageLibrary.Fonts.Label
                 Label.Text = name
                 Label.TextColor3 = RageLibrary.Theme.TextDim
-                Label.TextSize = 9.5
+                Label.TextSize = 10
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = DropRow
 
@@ -919,9 +909,11 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.BorderSizePixel = 0
                 DropBtn.Font = RageLibrary.Fonts.Badge
                 DropBtn.Text = "  " .. tostring(selected) .. "  ▼"
-                DropBtn.TextColor3 = RageLibrary.Theme.Accent
+                DropBtn.TextColor3 = RageLibrary.Theme.Text
                 DropBtn.TextSize = 9.5
                 DropBtn.TextXAlignment = Enum.TextXAlignment.Left
+                DropBtn.ClipsDescendants = true
+                DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
                 DropBtn.Parent = DropRow
                 addCorner(DropBtn, 4)
                 local DropBtnStroke = addStroke(DropBtn, RageLibrary.Theme.Stroke, 1)
@@ -970,8 +962,8 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isSel and (" ✓ " .. tostring(opt)) or ("   " .. tostring(opt))
-                        OptBtn.TextColor3 = isSel and RageLibrary.Theme.Accent or RageLibrary.Theme.Text
-                        OptBtn.TextSize = 9
+                        OptBtn.TextColor3 = isSel and RageLibrary.Theme.TextHover or RageLibrary.Theme.TextDim
+                        OptBtn.TextSize = 9.5
                         OptBtn.TextXAlignment = Enum.TextXAlignment.Left
                         OptBtn.ZIndex = 10001
                         OptBtn.Parent = DropList
@@ -984,7 +976,7 @@ function RageLibrary:CreateWindow(config)
                         end)
                         OptBtn.MouseLeave:Connect(function()
                             if not isSel then
-                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.Text })
+                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.TextDim })
                             end
                         end)
 
@@ -1061,7 +1053,7 @@ function RageLibrary:CreateWindow(config)
                 Label.Font = RageLibrary.Fonts.Label
                 Label.Text = name
                 Label.TextColor3 = RageLibrary.Theme.TextDim
-                Label.TextSize = 9.5
+                Label.TextSize = 10
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = DropRow
 
@@ -1072,9 +1064,10 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.BorderSizePixel = 0
                 DropBtn.Font = RageLibrary.Fonts.Badge
                 DropBtn.Text = "  " .. getSummary() .. "  ▼"
-                DropBtn.TextColor3 = RageLibrary.Theme.Accent
+                DropBtn.TextColor3 = RageLibrary.Theme.Text
                 DropBtn.TextSize = 9.5
                 DropBtn.TextXAlignment = Enum.TextXAlignment.Left
+                DropBtn.ClipsDescendants = true
                 DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
                 DropBtn.Parent = DropRow
                 addCorner(DropBtn, 4)
@@ -1124,8 +1117,8 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isChecked and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
-                        OptBtn.TextColor3 = isChecked and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
-                        OptBtn.TextSize = 9
+                        OptBtn.TextColor3 = isChecked and RageLibrary.Theme.TextHover or RageLibrary.Theme.TextDim
+                        OptBtn.TextSize = 9.5
                         OptBtn.TextXAlignment = Enum.TextXAlignment.Left
                         OptBtn.ZIndex = 10001
                         OptBtn.Parent = DropList
@@ -1145,7 +1138,7 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.MouseButton1Click:Connect(function()
                             selectedMap[opt] = not selectedMap[opt]
                             OptBtn.Text = selectedMap[opt] and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
-                            OptBtn.TextColor3 = selectedMap[opt] and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                            OptBtn.TextColor3 = selectedMap[opt] and RageLibrary.Theme.TextHover or RageLibrary.Theme.TextDim
                             OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                             DropBtn.Text = "  " .. getSummary() .. "  ▼"
                             RageLibrary:PlaySound(selectedMap[opt] and "ToggleOn" or "ToggleOff")
@@ -1207,7 +1200,7 @@ function RageLibrary:CreateWindow(config)
                 Label.Font = RageLibrary.Fonts.Label
                 Label.Text = name
                 Label.TextColor3 = RageLibrary.Theme.TextDim
-                Label.TextSize = 9.5
+                Label.TextSize = 10
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = BoxRow
 
