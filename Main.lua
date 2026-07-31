@@ -7,17 +7,17 @@ local RageLibrary = {
     CurrentThemeName = "Crimson Rage",
     Themes = {
         ["Crimson Rage"] = {
-            Background = Color3.fromRGB(10, 10, 12),      -- Pitch Black
-            Block = Color3.fromRGB(18, 18, 22),           -- Dark Charcoal Grey
-            Header = Color3.fromRGB(24, 24, 28),          -- Deep Slate Grey
-            Card = Color3.fromRGB(28, 28, 34),            -- Card Grey
-            Accent = Color3.fromRGB(235, 35, 55),         -- Blood Red / Crimson
-            AccentDim = Color3.fromRGB(175, 20, 35),
+            Background = Color3.fromRGB(10, 10, 12),      -- Pitch Black (#0A0A0C)
+            Block = Color3.fromRGB(16, 16, 20),           -- Dark Charcoal (#101014)
+            Header = Color3.fromRGB(22, 22, 28),          -- Deep Slate Grey (#16161C)
+            Card = Color3.fromRGB(26, 26, 32),            -- Card Grey (#1A1A20)
+            Accent = Color3.fromRGB(255, 35, 55),         -- Blood Crimson Red (#FF2337)
+            AccentDim = Color3.fromRGB(180, 20, 35),
             Text = Color3.fromRGB(245, 245, 245),         -- Pure White
-            TextDim = Color3.fromRGB(150, 150, 160),      -- Metallic Grey
-            Stroke = Color3.fromRGB(42, 42, 50),          -- Dark Graphite
-            StrokeActive = Color3.fromRGB(235, 35, 55),    -- Crimson Glow
-            StrokeHover = Color3.fromRGB(255, 100, 115),
+            TextDim = Color3.fromRGB(140, 140, 150),      -- Metallic Grey
+            Stroke = Color3.fromRGB(40, 40, 48),          -- Dark Graphite
+            StrokeActive = Color3.fromRGB(255, 35, 55),    -- Crimson Glow
+            StrokeHover = Color3.fromRGB(255, 90, 110),
         },
         ["Neverlose Cyan"] = {
             Background = Color3.fromRGB(11, 14, 20),
@@ -63,15 +63,16 @@ local RageLibrary = {
         Hitmark = "rbxassetid://160432334"
     },
     Icons = {
-        Logo     = "rbxassetid://122540234795087",
-        Combat   = "rbxassetid://12614416478",      
-        Movement = "rbxassetid://136160678435000", 
-        Visuals  = "rbxassetid://102976018150012", 
-        Misc     = "rbxassetid://137382232901580", 
-        World    = "rbxassetid://122563205713088", -- earth white
-        Auto     = "rbxassetid://102927017461693", -- loading v2
-        Guns     = "rbxassetid://84647432170503",  -- iconarma
-        Skins    = "rbxassetid://101708694952341"  -- Pencil Icon
+        Logo            = "rbxassetid://122540234795087",
+        BackgroundImage = "rbxassetid://134394687990758",
+        Combat          = "rbxassetid://12614416478",      
+        Movement        = "rbxassetid://136160678435000", 
+        Visuals         = "rbxassetid://102976018150012", 
+        Misc            = "rbxassetid://137382232901580", 
+        World           = "rbxassetid://122563205713088", -- earth white
+        Auto            = "rbxassetid://102927017461693", -- loading v2
+        Guns            = "rbxassetid://84647432170503",  -- iconarma
+        Skins           = "rbxassetid://101708694952341"  -- Pencil Icon
     },
     ToggleKey = Enum.KeyCode.RightShift,
     ListeningKeybind = false,
@@ -194,7 +195,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 99999999
 ScreenGui.Parent = ParentContainer
 
--- Top Watermark Widget (Ultra-Sleek Red-Black-Grey Aurora Design)
+-- Top Watermark Widget (Red-Black-Grey High Tech Design)
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
 Watermark.Size = UDim2.new(0, 480, 0, 30)
@@ -206,7 +207,7 @@ Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
 local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1.2)
 
--- Left Edge Glowing Red Accent Line
+-- Left Edge Crimson Accent Bar
 local WMarkEdge = Instance.new("Frame")
 WMarkEdge.Size = UDim2.new(0, 3, 1, 0)
 WMarkEdge.Position = UDim2.new(0, 0, 0, 0)
@@ -238,7 +239,7 @@ WMarkLogo.Parent = WMarkContent
 
 -- 2. Cheat Title
 local WMarkTitle = Instance.new("TextLabel")
-WMarkTitle.Size = UDim2.new(0, 100, 1, 0)
+WMarkTitle.Size = UDim2.new(0, 95, 1, 0)
 WMarkTitle.BackgroundTransparency = 1
 WMarkTitle.Font = RageLibrary.Fonts.Header
 WMarkTitle.Text = "PROJECT AURORA"
@@ -355,8 +356,8 @@ end)
 -- Main Cheat Window Factory Function
 function RageLibrary:CreateWindow(config)
     config = config or {}
-    local winTitle = config.Title or "NEVERLOSE"
-    local winSubTitle = config.SubTitle or "ROBLOX RAGE FRAMEWORK"
+    local winTitle = config.Title or "PROJECT AURORA"
+    local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.0"
     local winSize = config.Size or UDim2.new(0, 720, 0, 480)
 
     local MainFrame = Instance.new("Frame")
@@ -365,10 +366,23 @@ function RageLibrary:CreateWindow(config)
     MainFrame.Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
     MainFrame.BackgroundColor3 = RageLibrary.Theme.Background
     MainFrame.BorderSizePixel = 0
-    MainFrame.ClipsDescendants = false
+    MainFrame.ClipsDescendants = true
     MainFrame.Parent = ScreenGui
     addCorner(MainFrame, 8)
     local MainStroke = addStroke(MainFrame, RageLibrary.Theme.Stroke, 1.2)
+
+    -- Background Wallpaper Image Layer
+    local MenuBgImg = Instance.new("ImageLabel")
+    MenuBgImg.Name = "MenuBgWallpaper"
+    MenuBgImg.Size = UDim2.new(1, 0, 1, 0)
+    MenuBgImg.Position = UDim2.new(0, 0, 0, 0)
+    MenuBgImg.BackgroundTransparency = 1
+    MenuBgImg.Image = config.BackgroundImage or RageLibrary.Icons.BackgroundImage
+    MenuBgImg.ImageTransparency = 0.35
+    MenuBgImg.ScaleType = Enum.ScaleType.Crop
+    MenuBgImg.ZIndex = 0
+    MenuBgImg.Parent = MainFrame
+    addCorner(MenuBgImg, 8)
 
     -- Left Sidebar Navigation
     local Sidebar = Instance.new("Frame")
@@ -409,16 +423,24 @@ function RageLibrary:CreateWindow(config)
     LogoSub.TextXAlignment = Enum.TextXAlignment.Left
     LogoSub.Parent = Sidebar
 
-    local NavHolder = Instance.new("Frame")
+    -- Scrollable Sidebar Navigation Holder
+    local NavHolder = Instance.new("ScrollingFrame")
     NavHolder.Size = UDim2.new(1, -16, 1, -65)
     NavHolder.Position = UDim2.new(0, 8, 0, 56)
     NavHolder.BackgroundTransparency = 1
+    NavHolder.BorderSizePixel = 0
+    NavHolder.ScrollBarThickness = 2
+    NavHolder.ScrollBarImageColor3 = RageLibrary.Theme.Accent
     NavHolder.Parent = Sidebar
 
     local NavLayout = Instance.new("UIListLayout")
     NavLayout.SortOrder = Enum.SortOrder.LayoutOrder
     NavLayout.Padding = UDim.new(0, 4)
     NavLayout.Parent = NavHolder
+
+    NavLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        NavHolder.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
+    end)
 
     -- Content Area (Right Side)
     local ContentArea = Instance.new("Frame")
@@ -444,11 +466,7 @@ function RageLibrary:CreateWindow(config)
         TabBtn.BackgroundColor3 = RageLibrary.Theme.Card
         TabBtn.BackgroundTransparency = 0.5
         TabBtn.BorderSizePixel = 0
-        TabBtn.Font = RageLibrary.Fonts.Header
-        TabBtn.Text = resolvedIcon and ("        " .. tabName) or ("      " .. tabName)
-        TabBtn.TextColor3 = RageLibrary.Theme.TextDim
-        TabBtn.TextSize = 10.5
-        TabBtn.TextXAlignment = Enum.TextXAlignment.Left
+        TabBtn.Text = ""
         TabBtn.Parent = NavHolder
         addCorner(TabBtn, 6)
 
@@ -456,16 +474,27 @@ function RageLibrary:CreateWindow(config)
         if resolvedIcon then
             TabIconImg = Instance.new("ImageLabel")
             TabIconImg.Size = UDim2.new(0, 16, 0, 16)
-            TabIconImg.Position = UDim2.new(0, 12, 0.5, -8)
+            TabIconImg.Position = UDim2.new(0, 10, 0.5, -8)
             TabIconImg.BackgroundTransparency = 1
             TabIconImg.Image = resolvedIcon
             TabIconImg.ImageColor3 = RageLibrary.Theme.TextDim
             TabIconImg.Parent = TabBtn
         end
 
+        local TabTextLbl = Instance.new("TextLabel")
+        TabTextLbl.Size = UDim2.new(1, -34, 1, 0)
+        TabTextLbl.Position = UDim2.new(0, 32, 0, 0)
+        TabTextLbl.BackgroundTransparency = 1
+        TabTextLbl.Font = RageLibrary.Fonts.Header
+        TabTextLbl.Text = tabName
+        TabTextLbl.TextColor3 = RageLibrary.Theme.TextDim
+        TabTextLbl.TextSize = 10.5
+        TabTextLbl.TextXAlignment = Enum.TextXAlignment.Left
+        TabTextLbl.Parent = TabBtn
+
         local TabIndicator = Instance.new("Frame")
         TabIndicator.Size = UDim2.new(0, 3, 0, 18)
-        TabIndicator.Position = UDim2.new(0, 4, 0.5, -9)
+        TabIndicator.Position = UDim2.new(0, 3, 0.5, -9)
         TabIndicator.BackgroundColor3 = RageLibrary.Theme.Accent
         TabIndicator.Visible = false
         TabIndicator.Parent = TabBtn
@@ -484,7 +513,7 @@ function RageLibrary:CreateWindow(config)
         LeftCol.Position = UDim2.new(0, 0, 0, 0)
         LeftCol.BackgroundTransparency = 1
         LeftCol.BorderSizePixel = 0
-        LeftCol.ScrollBarThickness = 2
+        LeftCol.ScrollBarThickness = 3
         LeftCol.ScrollBarImageColor3 = RageLibrary.Theme.Accent
         LeftCol.Parent = TabPage
 
@@ -493,12 +522,16 @@ function RageLibrary:CreateWindow(config)
         LeftLayout.Padding = UDim.new(0, 8)
         LeftLayout.Parent = LeftCol
 
+        LeftLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            LeftCol.CanvasSize = UDim2.new(0, 0, 0, LeftLayout.AbsoluteContentSize.Y + 15)
+        end)
+
         local RightCol = Instance.new("ScrollingFrame")
         RightCol.Size = UDim2.new(0.49, 0, 1, 0)
         RightCol.Position = UDim2.new(0.51, 0, 0, 0)
         RightCol.BackgroundTransparency = 1
         RightCol.BorderSizePixel = 0
-        RightCol.ScrollBarThickness = 2
+        RightCol.ScrollBarThickness = 3
         RightCol.ScrollBarImageColor3 = RageLibrary.Theme.Accent
         RightCol.Parent = TabPage
 
@@ -507,18 +540,24 @@ function RageLibrary:CreateWindow(config)
         RightLayout.Padding = UDim.new(0, 8)
         RightLayout.Parent = RightCol
 
+        RightLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            RightCol.CanvasSize = UDim2.new(0, 0, 0, RightLayout.AbsoluteContentSize.Y + 15)
+        end)
+
         local TabObj = {
             Name = tabName,
             Page = TabPage,
             LeftCol = LeftCol,
             RightCol = RightCol,
-            IconImg = TabIconImg
+            IconImg = TabIconImg,
+            TextLbl = TabTextLbl
         }
 
         local function selectTab()
             for _, t in ipairs(WindowObj.Tabs) do
                 t.Page.Visible = false
-                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5, TextColor3 = RageLibrary.Theme.TextDim })
+                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5 })
+                smoothTween(t.TextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
                 if t.IconImg then
                     smoothTween(t.IconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextDim })
                 end
@@ -526,7 +565,8 @@ function RageLibrary:CreateWindow(config)
             end
             TabPage.Visible = true
             TabIndicator.Visible = true
-            smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, TextColor3 = RageLibrary.Theme.Accent })
+            smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0 })
+            smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
             if TabIconImg then
                 smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.Accent })
             end
