@@ -18,9 +18,9 @@ local RageLibrary = {
             Text = Color3.fromRGB(255, 255, 255),         -- Pure Crisp White (#FFFFFF)
             TextDim = Color3.fromRGB(220, 225, 235),       -- Light Silver White (#DCE1EB)
             TextHover = Color3.fromRGB(255, 255, 255),    -- Pure White Glow (#FFFFFF)
-            Stroke = Color3.fromRGB(38, 38, 48),          -- Dark Graphite
-            StrokeActive = Color3.fromRGB(255, 45, 70),     -- Crimson Glow
-            StrokeHover = Color3.fromRGB(255, 90, 110),
+            Stroke = Color3.fromRGB(28, 28, 36),          -- Subtle Dark Graphite (#1C1C24)
+            StrokeActive = Color3.fromRGB(40, 40, 52),     -- Subtle Slate
+            StrokeHover = Color3.fromRGB(40, 40, 52),
         }
     },
     Theme = nil,
@@ -184,7 +184,7 @@ Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = true
 Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
-local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1)
+local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Stroke, 1)
 
 local WMarkContent = Instance.new("Frame")
 WMarkContent.Size = UDim2.new(1, -12, 1, 0)
@@ -532,6 +532,11 @@ function RageLibrary:CreateWindow(config)
         }
 
         local function selectTab()
+            for _, child in ipairs(ScreenGui:GetChildren()) do
+                if child.Name:sub(1, 9) == "ModeMenu_" or child.Name:sub(1, 9) == "DropList_" or child.Name:sub(1, 14) == "MultiDropList_" then
+                    child.Visible = false
+                end
+            end
             for _, t in ipairs(WindowObj.Tabs) do
                 t.Page.Visible = false
                 smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5, BackgroundColor3 = RageLibrary.Theme.Card })
@@ -680,7 +685,6 @@ function RageLibrary:CreateWindow(config)
                     KeyBadge.TextSize = 8.5
                     KeyBadge.Parent = ControlsHolder
                     addCorner(KeyBadge, 4)
-                    local KeyStroke = addStroke(KeyBadge, RageLibrary.Theme.Stroke, 1)
 
                     updateBadgeText = function()
                         local kName = (typeof(bindKey) == "EnumItem" and bindKey.Name or tostring(bindKey))
@@ -699,11 +703,9 @@ function RageLibrary:CreateWindow(config)
 
                     KeyBadge.MouseEnter:Connect(function()
                         smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
-                        smoothTween(KeyStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                     end)
                     KeyBadge.MouseLeave:Connect(function()
                         smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                        smoothTween(KeyStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                     end)
 
                     -- Left Click: Rebind Key
@@ -730,7 +732,7 @@ function RageLibrary:CreateWindow(config)
                     ModeMenu.ZIndex = 20000
                     ModeMenu.Parent = ScreenGui
                     addCorner(ModeMenu, 5)
-                    addStroke(ModeMenu, RageLibrary.Theme.Accent, 1)
+                    addStroke(ModeMenu, RageLibrary.Theme.Stroke, 1)
 
                     local ModeLayout = Instance.new("UIListLayout")
                     ModeLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -810,16 +812,14 @@ function RageLibrary:CreateWindow(config)
                     end)
                 end
 
-                -- Toggle Hover Animation
+                -- Toggle Hover Animation (Clean Background Highlight, No Harsh Red Strokes)
                 ToggleRow.MouseEnter:Connect(function()
                     smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
-                    smoothTween(ToggleStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                 end)
                 ToggleRow.MouseLeave:Connect(function()
                     smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
-                    smoothTween(ToggleStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 ToggleRow.MouseButton1Click:Connect(function()
@@ -859,11 +859,9 @@ function RageLibrary:CreateWindow(config)
 
                 Btn.MouseEnter:Connect(function()
                     smoothTween(Btn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
-                    smoothTween(BtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                 end)
                 Btn.MouseLeave:Connect(function()
                     smoothTween(Btn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.Text })
-                    smoothTween(BtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 Btn.MouseButton1Click:Connect(function()
@@ -945,25 +943,22 @@ function RageLibrary:CreateWindow(config)
                 Fill.Parent = TrackBg
                 addCorner(Fill, 3)
 
-                -- Thumb Knob Dot
+                -- Thumb Knob Dot (Clean white, no stroke outline, compact size 8x8)
                 local ThumbKnob = Instance.new("Frame")
-                ThumbKnob.Size = UDim2.new(0, 12, 0, 12)
-                ThumbKnob.Position = UDim2.new(relX, -6, 0.5, -6)
+                ThumbKnob.Size = UDim2.new(0, 8, 0, 8)
+                ThumbKnob.Position = UDim2.new(relX, -4, 0.5, -4)
                 ThumbKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 ThumbKnob.BorderSizePixel = 0
                 ThumbKnob.Parent = TrackBg
-                addCorner(ThumbKnob, 6)
-                addStroke(ThumbKnob, RageLibrary.Theme.Accent, 1.5)
+                addCorner(ThumbKnob, 4)
 
                 SliderRow.MouseEnter:Connect(function()
                     smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
-                    smoothTween(SliderStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                 end)
                 SliderRow.MouseLeave:Connect(function()
                     smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
-                    smoothTween(SliderStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 local isDragging = false
@@ -974,7 +969,7 @@ function RageLibrary:CreateWindow(config)
                     currentVal = math.floor(min + (max - min) * r + 0.5)
                     ValBadge.Text = tostring(currentVal) .. suffix
                     Fill.Size = UDim2.new(r, 0, 1, 0)
-                    ThumbKnob.Position = UDim2.new(r, -6, 0.5, -6)
+                    ThumbKnob.Position = UDim2.new(r, -4, 0.5, -4)
                     if cb then cb(currentVal) end
                 end
 
@@ -1048,13 +1043,11 @@ function RageLibrary:CreateWindow(config)
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
-                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                 end)
                 DropRow.MouseLeave:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 -- Unclipped Floating Dropdown Menu Container
@@ -1069,7 +1062,7 @@ function RageLibrary:CreateWindow(config)
                 DropList.ScrollBarImageColor3 = RageLibrary.Theme.Accent
                 DropList.Parent = ScreenGui
                 addCorner(DropList, 5)
-                addStroke(DropList, RageLibrary.Theme.Accent, 1)
+                addStroke(DropList, RageLibrary.Theme.Stroke, 1)
 
                 local DropLayout = Instance.new("UIListLayout")
                 DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -1204,13 +1197,11 @@ function RageLibrary:CreateWindow(config)
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
-                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
                 end)
                 DropRow.MouseLeave:Connect(function()
                     smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
                     smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
                     smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                    smoothTween(DropRowStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
                 -- Unclipped Floating MultiSelect Container
@@ -1225,7 +1216,7 @@ function RageLibrary:CreateWindow(config)
                 DropList.ScrollBarImageColor3 = RageLibrary.Theme.Accent
                 DropList.Parent = ScreenGui
                 addCorner(DropList, 5)
-                addStroke(DropList, RageLibrary.Theme.Accent, 1)
+                addStroke(DropList, RageLibrary.Theme.Stroke, 1)
 
                 local DropLayout = Instance.new("UIListLayout")
                 DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
