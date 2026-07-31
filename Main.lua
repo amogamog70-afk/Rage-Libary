@@ -757,9 +757,12 @@ function RageLibrary:CreateWindow(config)
 
                 Btn.MouseButton1Click:Connect(function()
                     RageLibrary:PlaySound("Click")
-                    smoothTween(Btn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Accent }):Completed:Connect(function()
-                        smoothTween(Btn, 0.2, { BackgroundColor3 = RageLibrary.Theme.Header })
-                    end)
+                    local t = smoothTween(Btn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Accent })
+                    if t then
+                        t.Completed:Connect(function()
+                            smoothTween(Btn, 0.2, { BackgroundColor3 = RageLibrary.Theme.Header })
+                        end)
+                    end
                     if callback then callback() end
                 end)
 
