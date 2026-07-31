@@ -30,7 +30,7 @@ local RageLibrary = {
         Badge = Enum.Font.GothamMedium,
     },
     Sounds = {
-        Init = "rbxassetid://85298897773513",
+        Init = "rbxassetid://136440776569658",
         Click = "rbxassetid://139719503904449",
         ToggleOn = "rbxassetid://15675059323",
         ToggleOff = "rbxassetid://87437544236708",
@@ -41,7 +41,7 @@ local RageLibrary = {
     },
     Icons = {
         Logo            = "rbxassetid://122540234795087",
-        BackgroundImage = "rbxassetid://5510463866",
+        BackgroundImage = "rbxassetid://8372959577",
         Combat          = "rbxassetid://12614416478",      
         Movement        = "rbxassetid://136160678435000", 
         Visuals         = "rbxassetid://102976018150012", 
@@ -329,13 +329,20 @@ function RageLibrary:CreateWindow(config)
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "RageMainFrame"
     MainFrame.Size = winSize
-    MainFrame.Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
+    MainFrame.Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2 + 30)
     MainFrame.BackgroundColor3 = RageLibrary.Theme.Background
+    MainFrame.BackgroundTransparency = 1
     MainFrame.BorderSizePixel = 0
     MainFrame.ClipsDescendants = true
     MainFrame.Parent = ScreenGui
     addCorner(MainFrame, 8)
     local MainStroke = addStroke(MainFrame, RageLibrary.Theme.Stroke, 1.2)
+
+    -- Entrance animation: slide up + fade in
+    TweenService:Create(MainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+        BackgroundTransparency = 0.18,
+        Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
+    }):Play()
 
     -- Background Wallpaper Image Layer (Full Frame Stretch & Scaled)
     local MenuBgImg = Instance.new("ImageLabel")
@@ -355,6 +362,7 @@ function RageLibrary:CreateWindow(config)
     Sidebar.Name = "Sidebar"
     Sidebar.Size = UDim2.new(0, 165, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
+    Sidebar.BackgroundTransparency = 0.25
     Sidebar.BorderSizePixel = 0
     Sidebar.ClipsDescendants = true
     Sidebar.Parent = MainFrame
@@ -564,7 +572,11 @@ function RageLibrary:CreateWindow(config)
                 end
                 t.Indicator.Visible = false
             end
+            -- Fade-in TabPage with slight upward slide
+            TabPage.Position = UDim2.new(0, 0, 0, 10)
+            TabPage.BackgroundTransparency = 1
             TabPage.Visible = true
+            smoothTween(TabPage, 0.22, { Position = UDim2.new(0, 0, 0, 0) })
             TabIndicator.Visible = true
             smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.CardHover })
             smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
@@ -604,10 +616,16 @@ function RageLibrary:CreateWindow(config)
             Card.Name = "Section_" .. secName
             Card.Size = UDim2.new(1, -4, 0, 36)
             Card.BackgroundColor3 = RageLibrary.Theme.Card
+            Card.BackgroundTransparency = 1
             Card.BorderSizePixel = 0
             Card.Parent = parentCol
             addCorner(Card, 6)
             addStroke(Card, RageLibrary.Theme.Stroke, 1)
+            -- Card entrance animation
+            local cardIdx = #parentCol:GetChildren()
+            task.delay(cardIdx * 0.05, function()
+                smoothTween(Card, 0.3, { BackgroundTransparency = 0.25 })
+            end)
 
             local CardTitle = Instance.new("TextLabel")
             CardTitle.Size = UDim2.new(1, -20, 0, 24)
@@ -650,12 +668,18 @@ function RageLibrary:CreateWindow(config)
                 local ToggleRow = Instance.new("TextButton")
                 ToggleRow.Size = UDim2.new(1, 0, 0, 30)
                 ToggleRow.BackgroundColor3 = RageLibrary.Theme.Block
+                ToggleRow.BackgroundTransparency = 1
                 ToggleRow.BorderSizePixel = 0
                 ToggleRow.AutoButtonColor = false
                 ToggleRow.Text = ""
                 ToggleRow.Parent = ItemsHolder
                 addCorner(ToggleRow, 6)
                 local ToggleStroke = addStroke(ToggleRow, RageLibrary.Theme.Stroke, 1)
+                -- Row entrance animation (fade in)
+                local rowIdx = #ItemsHolder:GetChildren()
+                task.delay(0.08 + rowIdx * 0.04, function()
+                    smoothTween(ToggleRow, 0.25, { BackgroundTransparency = 0.3 })
+                end)
 
                 local Label = Instance.new("TextLabel")
                 Label.Size = UDim2.new(1, -125, 1, 0)
@@ -920,10 +944,15 @@ function RageLibrary:CreateWindow(config)
                 local SliderRow = Instance.new("Frame")
                 SliderRow.Size = UDim2.new(1, 0, 0, 44)
                 SliderRow.BackgroundColor3 = RageLibrary.Theme.Block
+                SliderRow.BackgroundTransparency = 1
                 SliderRow.BorderSizePixel = 0
                 SliderRow.Parent = ItemsHolder
                 addCorner(SliderRow, 6)
                 local SliderStroke = addStroke(SliderRow, RageLibrary.Theme.Stroke, 1)
+                local sliderRowIdx = #ItemsHolder:GetChildren()
+                task.delay(0.08 + sliderRowIdx * 0.04, function()
+                    smoothTween(SliderRow, 0.25, { BackgroundTransparency = 0.3 })
+                end)
 
                 local Label = Instance.new("TextLabel")
                 Label.Size = UDim2.new(1, -65, 0, 18)
@@ -1039,10 +1068,15 @@ function RageLibrary:CreateWindow(config)
                 local DropRow = Instance.new("Frame")
                 DropRow.Size = UDim2.new(1, 0, 0, 44)
                 DropRow.BackgroundColor3 = RageLibrary.Theme.Block
+                DropRow.BackgroundTransparency = 1
                 DropRow.BorderSizePixel = 0
                 DropRow.Parent = ItemsHolder
                 addCorner(DropRow, 6)
                 local DropRowStroke = addStroke(DropRow, RageLibrary.Theme.Stroke, 1)
+                local dropRowIdx = #ItemsHolder:GetChildren()
+                task.delay(0.08 + dropRowIdx * 0.04, function()
+                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.3 })
+                end)
 
                 local Label = Instance.new("TextLabel")
                 Label.Size = UDim2.new(1, -16, 0, 16)
@@ -1195,10 +1229,15 @@ function RageLibrary:CreateWindow(config)
                 local DropRow = Instance.new("Frame")
                 DropRow.Size = UDim2.new(1, 0, 0, 44)
                 DropRow.BackgroundColor3 = RageLibrary.Theme.Block
+                DropRow.BackgroundTransparency = 1
                 DropRow.BorderSizePixel = 0
                 DropRow.Parent = ItemsHolder
                 addCorner(DropRow, 6)
                 local DropRowStroke = addStroke(DropRow, RageLibrary.Theme.Stroke, 1)
+                local msRowIdx = #ItemsHolder:GetChildren()
+                task.delay(0.08 + msRowIdx * 0.04, function()
+                    smoothTween(DropRow, 0.25, { BackgroundTransparency = 0.3 })
+                end)
 
                 local Label = Instance.new("TextLabel")
                 Label.Size = UDim2.new(1, -16, 0, 16)
