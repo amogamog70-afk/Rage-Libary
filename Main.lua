@@ -1,6 +1,6 @@
--- [[ RAGE.LIBRARY — NEVERLOSE / GAMESENSE / PROJECT AURORA STYLE RAGE CHEAT UI ENGINE ]] --
--- Engine Version: 1.0.0
--- Architecture: Dual-Column Card Layout with Vertical Sidebar & Integrated Widgets
+-- [[ PROJECT AURORA — ULTIMATE STANDALONE ALL-IN-ONE RAGE SCRIPT ]] --
+-- Engine Version: 1.1.0
+-- Everything in 1 single file for immediate execution in Roblox Executor!
 
 local RageLibrary = {
     Enabled = true,
@@ -18,35 +18,9 @@ local RageLibrary = {
             Stroke = Color3.fromRGB(40, 40, 48),          -- Dark Graphite
             StrokeActive = Color3.fromRGB(255, 35, 55),    -- Crimson Glow
             StrokeHover = Color3.fromRGB(255, 90, 110),
-        },
-        ["Neverlose Cyan"] = {
-            Background = Color3.fromRGB(11, 14, 20),
-            Block = Color3.fromRGB(16, 20, 29),
-            Header = Color3.fromRGB(22, 27, 39),
-            Card = Color3.fromRGB(26, 32, 46),
-            Accent = Color3.fromRGB(0, 148, 255),
-            AccentDim = Color3.fromRGB(0, 105, 185),
-            Text = Color3.fromRGB(240, 244, 250),
-            TextDim = Color3.fromRGB(145, 158, 178),
-            Stroke = Color3.fromRGB(36, 44, 62),
-            StrokeActive = Color3.fromRGB(0, 148, 255),
-            StrokeHover = Color3.fromRGB(200, 220, 255),
-        },
-        ["Gamesense Mint"] = {
-            Background = Color3.fromRGB(12, 14, 18),
-            Block = Color3.fromRGB(17, 20, 26),
-            Header = Color3.fromRGB(23, 27, 35),
-            Card = Color3.fromRGB(28, 33, 43),
-            Accent = Color3.fromRGB(162, 216, 61),
-            AccentDim = Color3.fromRGB(115, 155, 40),
-            Text = Color3.fromRGB(240, 245, 250),
-            TextDim = Color3.fromRGB(145, 155, 170),
-            Stroke = Color3.fromRGB(36, 42, 54),
-            StrokeActive = Color3.fromRGB(162, 216, 61),
-            StrokeHover = Color3.fromRGB(210, 240, 160),
         }
     },
-    Theme = nil, -- Assigned below
+    Theme = nil,
     Fonts = {
         Header = Enum.Font.GothamBold,
         Label = Enum.Font.GothamMedium,
@@ -69,10 +43,10 @@ local RageLibrary = {
         Movement        = "rbxassetid://136160678435000", 
         Visuals         = "rbxassetid://102976018150012", 
         Misc            = "rbxassetid://137382232901580", 
-        World           = "rbxassetid://122563205713088", -- earth white
-        Auto            = "rbxassetid://102927017461693", -- loading v2
-        Guns            = "rbxassetid://84647432170503",  -- iconarma
-        Skins           = "rbxassetid://101708694952341"  -- Pencil Icon
+        World           = "rbxassetid://122563205713088",
+        Auto            = "rbxassetid://102927017461693",
+        Guns            = "rbxassetid://84647432170503",
+        Skins           = "rbxassetid://101708694952341"
     },
     ToggleKey = Enum.KeyCode.RightShift,
     ListeningKeybind = false,
@@ -195,30 +169,23 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 99999999
 ScreenGui.Parent = ParentContainer
 
--- Top Watermark Widget (Red-Black-Grey High Tech Design)
+-- =================================================================
+-- NEW WATERMARK DESIGN (100% REWRITTEN FROM SCRATCH - ULTRA SLEEK)
+-- =================================================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 480, 0, 30)
-Watermark.Position = UDim2.new(0.5, -240, 0, 10)
-Watermark.BackgroundColor3 = RageLibrary.Theme.Block
+Watermark.Size = UDim2.new(0, 410, 0, 26)
+Watermark.Position = UDim2.new(1, -420, 0, 10)
+Watermark.BackgroundColor3 = RageLibrary.Theme.Background
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = false
 Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
-local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1.2)
-
--- Left Edge Crimson Accent Bar
-local WMarkEdge = Instance.new("Frame")
-WMarkEdge.Size = UDim2.new(0, 3, 1, 0)
-WMarkEdge.Position = UDim2.new(0, 0, 0, 0)
-WMarkEdge.BackgroundColor3 = RageLibrary.Theme.Accent
-WMarkEdge.BorderSizePixel = 0
-WMarkEdge.Parent = Watermark
-addCorner(WMarkEdge, 3)
+addStroke(Watermark, RageLibrary.Theme.Accent, 1)
 
 local WMarkContent = Instance.new("Frame")
-WMarkContent.Size = UDim2.new(1, -6, 1, 0)
-WMarkContent.Position = UDim2.new(0, 6, 0, 0)
+WMarkContent.Size = UDim2.new(1, -8, 1, 0)
+WMarkContent.Position = UDim2.new(0, 4, 0, 0)
 WMarkContent.BackgroundTransparency = 1
 WMarkContent.Parent = Watermark
 
@@ -226,31 +193,24 @@ local WMarkLayout = Instance.new("UIListLayout")
 WMarkLayout.FillDirection = Enum.FillDirection.Horizontal
 WMarkLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 WMarkLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-WMarkLayout.Padding = UDim.new(0, 8)
+WMarkLayout.Padding = UDim.new(0, 6)
 WMarkLayout.Parent = WMarkContent
 
--- 1. Logo
-local WMarkLogo = Instance.new("ImageLabel")
-WMarkLogo.Size = UDim2.new(0, 16, 0, 16)
-WMarkLogo.BackgroundTransparency = 1
-WMarkLogo.Image = RageLibrary.Icons.Logo
-WMarkLogo.ImageColor3 = RageLibrary.Theme.Accent
-WMarkLogo.Parent = WMarkContent
-
--- 2. Cheat Title
-local WMarkTitle = Instance.new("TextLabel")
-WMarkTitle.Size = UDim2.new(0, 95, 1, 0)
-WMarkTitle.BackgroundTransparency = 1
-WMarkTitle.Font = RageLibrary.Fonts.Header
-WMarkTitle.Text = "PROJECT AURORA"
-WMarkTitle.TextColor3 = RageLibrary.Theme.Text
-WMarkTitle.TextSize = 10.5
-WMarkTitle.TextXAlignment = Enum.TextXAlignment.Left
-WMarkTitle.Parent = WMarkContent
+-- 1. Brand Tag Badge (Glowing Crimson)
+local BrandBadge = Instance.new("TextLabel")
+BrandBadge.Size = UDim2.new(0, 65, 0, 16)
+BrandBadge.BackgroundColor3 = RageLibrary.Theme.Accent
+BrandBadge.BorderSizePixel = 0
+BrandBadge.Font = RageLibrary.Fonts.Header
+BrandBadge.Text = "AURORA"
+BrandBadge.TextColor3 = RageLibrary.Theme.Text
+BrandBadge.TextSize = 9.5
+BrandBadge.Parent = WMarkContent
+addCorner(BrandBadge, 4)
 
 local function addWMDivider()
     local div = Instance.new("Frame")
-    div.Size = UDim2.new(0, 1, 0, 14)
+    div.Size = UDim2.new(0, 1, 0, 12)
     div.BackgroundColor3 = RageLibrary.Theme.Stroke
     div.BorderSizePixel = 0
     div.Parent = WMarkContent
@@ -258,9 +218,9 @@ end
 
 addWMDivider()
 
--- 3. Player Avatar & Username
+-- 2. Player Avatar Headshot & Username
 local AvatarHolder = Instance.new("Frame")
-AvatarHolder.Size = UDim2.new(0, 18, 0, 18)
+AvatarHolder.Size = UDim2.new(0, 16, 0, 16)
 AvatarHolder.BackgroundTransparency = 1
 AvatarHolder.Parent = WMarkContent
 
@@ -269,7 +229,7 @@ AvatarImg.Size = UDim2.new(1, 0, 1, 0)
 AvatarImg.BackgroundTransparency = 1
 AvatarImg.Image = "rbxassetid://0"
 AvatarImg.Parent = AvatarHolder
-addCorner(AvatarImg, 9)
+addCorner(AvatarImg, 8)
 
 if LocalPlayer then
     pcall(function()
@@ -288,57 +248,57 @@ UserLabel.BackgroundTransparency = 1
 UserLabel.Font = RageLibrary.Fonts.Badge
 UserLabel.Text = LocalPlayer and LocalPlayer.Name or "User"
 UserLabel.TextColor3 = RageLibrary.Theme.Text
-UserLabel.TextSize = 9.5
+UserLabel.TextSize = 9
 UserLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserLabel.TextXAlignment = Enum.TextXAlignment.Left
 UserLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 4. FPS Counter
+-- 3. FPS Counter
 local FPSLabel = Instance.new("TextLabel")
 FPSLabel.Size = UDim2.new(0, 52, 1, 0)
 FPSLabel.BackgroundTransparency = 1
 FPSLabel.Font = RageLibrary.Fonts.Badge
-FPSLabel.Text = "144 FPS"
+FPSLabel.Text = "⚡ 144 FPS"
 FPSLabel.TextColor3 = RageLibrary.Theme.Accent
-FPSLabel.TextSize = 9.5
+FPSLabel.TextSize = 9
 FPSLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 5. Ping Counter
+-- 4. Ping Counter
 local PingLabel = Instance.new("TextLabel")
-PingLabel.Size = UDim2.new(0, 42, 1, 0)
+PingLabel.Size = UDim2.new(0, 45, 1, 0)
 PingLabel.BackgroundTransparency = 1
 PingLabel.Font = RageLibrary.Fonts.Badge
-PingLabel.Text = "15 ms"
+PingLabel.Text = "📶 15 ms"
 PingLabel.TextColor3 = RageLibrary.Theme.TextDim
-PingLabel.TextSize = 9.5
+PingLabel.TextSize = 9
 PingLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 6. Clock Time
+-- 5. Real-Time Clock
 local TimeLabel = Instance.new("TextLabel")
-TimeLabel.Size = UDim2.new(0, 55, 1, 0)
+TimeLabel.Size = UDim2.new(0, 60, 1, 0)
 TimeLabel.BackgroundTransparency = 1
 TimeLabel.Font = RageLibrary.Fonts.Badge
-TimeLabel.Text = os.date("%H:%M:%S")
+TimeLabel.Text = os.date("🕒 %H:%M:%S")
 TimeLabel.TextColor3 = RageLibrary.Theme.TextDim
-TimeLabel.TextSize = 9.5
+TimeLabel.TextSize = 9
 TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
 
--- FPS, Ping & Time Loop
+-- Live Metrics Loop
 local frameCount = 0
 local lastFpsCheck = tick()
 RunService.RenderStepped:Connect(function()
     frameCount = frameCount + 1
     local now = tick()
     if now - lastFpsCheck >= 1 then
-        FPSLabel.Text = frameCount .. " FPS"
+        FPSLabel.Text = "⚡ " .. frameCount .. " FPS"
         frameCount = 0
         lastFpsCheck = now
 
@@ -348,8 +308,8 @@ RunService.RenderStepped:Connect(function()
             local dataPing = stats.Network.ServerStatsItem:FindFirstChild("Data Ping")
             if dataPing then pingMs = math.floor(dataPing:GetValue()) end
         end)
-        PingLabel.Text = pingMs .. " ms"
-        TimeLabel.Text = os.date("%H:%M:%S")
+        PingLabel.Text = "📶 " .. pingMs .. " ms"
+        TimeLabel.Text = os.date("🕒 %H:%M:%S")
     end
 end)
 
@@ -357,7 +317,7 @@ end)
 function RageLibrary:CreateWindow(config)
     config = config or {}
     local winTitle = config.Title or "PROJECT AURORA"
-    local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.0"
+    local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.1"
     local winSize = config.Size or UDim2.new(0, 720, 0, 480)
 
     local MainFrame = Instance.new("Frame")
@@ -371,14 +331,14 @@ function RageLibrary:CreateWindow(config)
     addCorner(MainFrame, 8)
     local MainStroke = addStroke(MainFrame, RageLibrary.Theme.Stroke, 1.2)
 
-    -- Background Wallpaper Image Layer
+    -- Background Wallpaper Image Layer (Inset & Scaled)
     local MenuBgImg = Instance.new("ImageLabel")
     MenuBgImg.Name = "MenuBgWallpaper"
-    MenuBgImg.Size = UDim2.new(1, 0, 1, 0)
-    MenuBgImg.Position = UDim2.new(0, 0, 0, 0)
+    MenuBgImg.Size = UDim2.new(0.92, 0, 0.92, 0)
+    MenuBgImg.Position = UDim2.new(0.04, 0, 0.04, 0)
     MenuBgImg.BackgroundTransparency = 1
     MenuBgImg.Image = config.BackgroundImage or RageLibrary.Icons.BackgroundImage
-    MenuBgImg.ImageTransparency = 0.35
+    MenuBgImg.ImageTransparency = 0.45
     MenuBgImg.ScaleType = Enum.ScaleType.Crop
     MenuBgImg.ZIndex = 0
     MenuBgImg.Parent = MainFrame
@@ -628,6 +588,7 @@ function RageLibrary:CreateWindow(config)
                 parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 20)
             end
 
+            -- TOGGLE (KEYBIND ON THE LEFT SIDE)
             function SectionObj:AddToggle(cfg, legacyDefault, legacyCb)
                 local name = type(cfg) == "table" and cfg.Name or cfg
                 local state = (type(cfg) == "table" and cfg.Default) or (type(cfg) ~= "table" and legacyDefault) or false
@@ -643,9 +604,46 @@ function RageLibrary:CreateWindow(config)
                 ToggleRow.Parent = ItemsHolder
                 addCorner(ToggleRow, 5)
 
+                local labelStartX = 8
+
+                -- Left Side Keybind Badge
+                local KeyBadge = nil
+                if bindKey then
+                    KeyBadge = Instance.new("TextButton")
+                    KeyBadge.Size = UDim2.new(0, 32, 0, 16)
+                    KeyBadge.Position = UDim2.new(0, 6, 0.5, -8)
+                    KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
+                    KeyBadge.BorderSizePixel = 0
+                    KeyBadge.Font = RageLibrary.Fonts.Badge
+                    KeyBadge.Text = "[" .. (typeof(bindKey) == "EnumItem" and bindKey.Name or tostring(bindKey)) .. "]"
+                    KeyBadge.TextColor3 = RageLibrary.Theme.Accent
+                    KeyBadge.TextSize = 8.5
+                    KeyBadge.Parent = ToggleRow
+                    addCorner(KeyBadge, 3)
+                    addStroke(KeyBadge, RageLibrary.Theme.Accent, 1)
+
+                    local isListening = false
+                    KeyBadge.MouseButton1Click:Connect(function()
+                        isListening = true
+                        KeyBadge.Text = "[...]"
+                        KeyBadge.TextColor3 = RageLibrary.Theme.Text
+                        local conn
+                        conn = UserInputService.InputBegan:Connect(function(input)
+                            if input.UserInputType == Enum.UserInputType.Keyboard then
+                                isListening = false
+                                bindKey = input.KeyCode
+                                KeyBadge.Text = "[" .. bindKey.Name .. "]"
+                                KeyBadge.TextColor3 = RageLibrary.Theme.Accent
+                                conn:Disconnect()
+                            end
+                        end)
+                    end)
+                    labelStartX = 44
+                end
+
                 local Label = Instance.new("TextLabel")
-                Label.Size = UDim2.new(1, -90, 1, 0)
-                Label.Position = UDim2.new(0, 8, 0, 0)
+                Label.Size = UDim2.new(1, -labelStartX - 40, 1, 0)
+                Label.Position = UDim2.new(0, labelStartX, 0, 0)
                 Label.BackgroundTransparency = 1
                 Label.Font = RageLibrary.Fonts.Label
                 Label.Text = name
@@ -654,58 +652,13 @@ function RageLibrary:CreateWindow(config)
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = ToggleRow
 
-                -- Right Side Container (Switch + Optional Keybind)
-                local RightControls = Instance.new("Frame")
-                RightControls.Size = UDim2.new(0, 80, 1, 0)
-                RightControls.Position = UDim2.new(1, -84, 0, 0)
-                RightControls.BackgroundTransparency = 1
-                RightControls.Parent = ToggleRow
-
-                local ControlsLayout = Instance.new("UIListLayout")
-                ControlsLayout.FillDirection = Enum.FillDirection.Horizontal
-                ControlsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-                ControlsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-                ControlsLayout.Padding = UDim.new(0, 5)
-                ControlsLayout.Parent = RightControls
-
-                -- Optional Inline Keybind Badge
-                local KeyBadge = nil
-                if bindKey then
-                    KeyBadge = Instance.new("TextButton")
-                    KeyBadge.Size = UDim2.new(0, 36, 0, 16)
-                    KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
-                    KeyBadge.BorderSizePixel = 0
-                    KeyBadge.Font = RageLibrary.Fonts.Badge
-                    KeyBadge.Text = "[" .. (typeof(bindKey) == "EnumItem" and bindKey.Name or tostring(bindKey)) .. "]"
-                    KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
-                    KeyBadge.TextSize = 8.5
-                    KeyBadge.Parent = RightControls
-                    addCorner(KeyBadge, 3)
-
-                    local isListening = false
-                    KeyBadge.MouseButton1Click:Connect(function()
-                        isListening = true
-                        KeyBadge.Text = "[...]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.Accent
-                        local conn
-                        conn = UserInputService.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.Keyboard then
-                                isListening = false
-                                bindKey = input.KeyCode
-                                KeyBadge.Text = "[" .. bindKey.Name .. "]"
-                                KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
-                                conn:Disconnect()
-                            end
-                        end)
-                    end)
-                end
-
-                -- Toggle Switch
+                -- Right Side Switch
                 local SwitchBg = Instance.new("Frame")
                 SwitchBg.Size = UDim2.new(0, 28, 0, 14)
+                SwitchBg.Position = UDim2.new(1, -34, 0.5, -7)
                 SwitchBg.BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header
                 SwitchBg.BorderSizePixel = 0
-                SwitchBg.Parent = RightControls
+                SwitchBg.Parent = ToggleRow
                 addCorner(SwitchBg, 7)
 
                 local Knob = Instance.new("Frame")
@@ -857,11 +810,14 @@ function RageLibrary:CreateWindow(config)
                 updateCardSize()
             end
 
+            -- INTERACTIVE DROPDOWN
             function SectionObj:AddDropdown(cfg)
                 local name = type(cfg) == "table" and cfg.Name or "Dropdown"
                 local options = type(cfg) == "table" and cfg.Options or {}
                 local selected = type(cfg) == "table" and (cfg.Default or options[1]) or ""
                 local cb = type(cfg) == "table" and cfg.Callback or nil
+
+                local isOpen = false
 
                 local DropRow = Instance.new("Frame")
                 DropRow.Size = UDim2.new(1, 0, 0, 44)
@@ -887,14 +843,223 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.BackgroundColor3 = RageLibrary.Theme.Header
                 DropBtn.BorderSizePixel = 0
                 DropBtn.Font = RageLibrary.Fonts.Badge
-                DropBtn.Text = "  " .. tostring(selected) .. " v"
+                DropBtn.Text = "  " .. tostring(selected) .. "  ▼"
                 DropBtn.TextColor3 = RageLibrary.Theme.Accent
                 DropBtn.TextSize = 9.5
                 DropBtn.TextXAlignment = Enum.TextXAlignment.Left
                 DropBtn.Parent = DropRow
                 addCorner(DropBtn, 4)
 
+                -- Unclipped Floating Dropdown Menu Container
+                local DropList = Instance.new("ScrollingFrame")
+                DropList.Name = "DropList_" .. name
+                DropList.Size = UDim2.new(0, 0, 0, 0)
+                DropList.BackgroundColor3 = RageLibrary.Theme.Header
+                DropList.BorderSizePixel = 0
+                DropList.Visible = false
+                DropList.ZIndex = 10000
+                DropList.ScrollBarThickness = 2
+                DropList.ScrollBarImageColor3 = RageLibrary.Theme.Accent
+                DropList.Parent = ScreenGui
+                addCorner(DropList, 5)
+                addStroke(DropList, RageLibrary.Theme.Accent, 1)
+
+                local DropLayout = Instance.new("UIListLayout")
+                DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                DropLayout.Padding = UDim.new(0, 2)
+                DropLayout.Parent = DropList
+
+                local function rebuildOptions()
+                    for _, child in ipairs(DropList:GetChildren()) do
+                        if child:IsA("TextButton") then child:Destroy() end
+                    end
+                    for idx, opt in ipairs(options) do
+                        local isSel = (tostring(opt) == tostring(selected))
+                        local OptBtn = Instance.new("TextButton")
+                        OptBtn.Size = UDim2.new(1, -4, 0, 20)
+                        OptBtn.BackgroundColor3 = isSel and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                        OptBtn.BorderSizePixel = 0
+                        OptBtn.Font = RageLibrary.Fonts.Label
+                        OptBtn.Text = isSel and (" ✓ " .. tostring(opt)) or ("   " .. tostring(opt))
+                        OptBtn.TextColor3 = isSel and RageLibrary.Theme.Accent or RageLibrary.Theme.Text
+                        OptBtn.TextSize = 9
+                        OptBtn.TextXAlignment = Enum.TextXAlignment.Left
+                        OptBtn.ZIndex = 10001
+                        OptBtn.Parent = DropList
+                        addCorner(OptBtn, 3)
+
+                        OptBtn.MouseButton1Click:Connect(function()
+                            selected = opt
+                            DropBtn.Text = "  " .. tostring(selected) .. "  ▼"
+                            isOpen = false
+                            DropList.Visible = false
+                            RageLibrary:PlaySound("Click")
+                            if cb then cb(selected) end
+                        end)
+                    end
+                    local h = math.min(#options * 22 + 4, 120)
+                    DropList.CanvasSize = UDim2.new(0, 0, 0, #options * 22)
+                    return h
+                end
+
+                DropBtn.MouseButton1Click:Connect(function()
+                    isOpen = not isOpen
+                    if isOpen then
+                        local h = rebuildOptions()
+                        DropList.Size = UDim2.new(0, DropBtn.AbsoluteSize.X, 0, h)
+                        DropList.Position = UDim2.new(0, DropBtn.AbsolutePosition.X, 0, DropBtn.AbsolutePosition.Y + DropBtn.AbsoluteSize.Y + 2)
+                        DropList.Visible = true
+                        RageLibrary:PlaySound("Click")
+                    else
+                        DropList.Visible = false
+                    end
+                end)
+
                 updateCardSize()
+                return {
+                    SetOptions = function(newOpts) options = newOpts rebuildOptions() end,
+                    SetValue = function(val) selected = val DropBtn.Text = "  " .. tostring(selected) .. "  ▼" end
+                }
+            end
+
+            -- INTERACTIVE MULTI-SELECT
+            function SectionObj:AddMultiSelect(cfg)
+                local name = type(cfg) == "table" and cfg.Name or "MultiSelect"
+                local options = type(cfg) == "table" and cfg.Options or {}
+                local selectedList = type(cfg) == "table" and (cfg.Default or {}) or {}
+                local cb = type(cfg) == "table" and cfg.Callback or nil
+
+                local selectedMap = {}
+                for _, item in ipairs(selectedList) do
+                    selectedMap[item] = true
+                end
+
+                local isOpen = false
+
+                local function getSummary()
+                    local summary = {}
+                    for _, opt in ipairs(options) do
+                        if selectedMap[opt] then
+                            table.insert(summary, opt)
+                        end
+                    end
+                    if #summary == 0 then return "None" end
+                    return table.concat(summary, ", ")
+                end
+
+                local DropRow = Instance.new("Frame")
+                DropRow.Size = UDim2.new(1, 0, 0, 44)
+                DropRow.BackgroundColor3 = RageLibrary.Theme.Block
+                DropRow.BorderSizePixel = 0
+                DropRow.Parent = ItemsHolder
+                addCorner(DropRow, 5)
+
+                local Label = Instance.new("TextLabel")
+                Label.Size = UDim2.new(1, -16, 0, 16)
+                Label.Position = UDim2.new(0, 8, 0, 4)
+                Label.BackgroundTransparency = 1
+                Label.Font = RageLibrary.Fonts.Label
+                Label.Text = name
+                Label.TextColor3 = RageLibrary.Theme.TextDim
+                Label.TextSize = 9.5
+                Label.TextXAlignment = Enum.TextXAlignment.Left
+                Label.Parent = DropRow
+
+                local DropBtn = Instance.new("TextButton")
+                DropBtn.Size = UDim2.new(1, -16, 0, 20)
+                DropBtn.Position = UDim2.new(0, 8, 0, 20)
+                DropBtn.BackgroundColor3 = RageLibrary.Theme.Header
+                DropBtn.BorderSizePixel = 0
+                DropBtn.Font = RageLibrary.Fonts.Badge
+                DropBtn.Text = "  " .. getSummary() .. "  ▼"
+                DropBtn.TextColor3 = RageLibrary.Theme.Accent
+                DropBtn.TextSize = 9.5
+                DropBtn.TextXAlignment = Enum.TextXAlignment.Left
+                DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
+                DropBtn.Parent = DropRow
+                addCorner(DropBtn, 4)
+
+                -- Unclipped Floating MultiSelect Container
+                local DropList = Instance.new("ScrollingFrame")
+                DropList.Name = "MultiDropList_" .. name
+                DropList.Size = UDim2.new(0, 0, 0, 0)
+                DropList.BackgroundColor3 = RageLibrary.Theme.Header
+                DropList.BorderSizePixel = 0
+                DropList.Visible = false
+                DropList.ZIndex = 10000
+                DropList.ScrollBarThickness = 2
+                DropList.ScrollBarImageColor3 = RageLibrary.Theme.Accent
+                DropList.Parent = ScreenGui
+                addCorner(DropList, 5)
+                addStroke(DropList, RageLibrary.Theme.Accent, 1)
+
+                local DropLayout = Instance.new("UIListLayout")
+                DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                DropLayout.Padding = UDim.new(0, 2)
+                DropLayout.Parent = DropList
+
+                local function rebuildOptions()
+                    for _, child in ipairs(DropList:GetChildren()) do
+                        if child:IsA("TextButton") then child:Destroy() end
+                    end
+                    for idx, opt in ipairs(options) do
+                        local isChecked = selectedMap[opt] or false
+                        local OptBtn = Instance.new("TextButton")
+                        OptBtn.Size = UDim2.new(1, -4, 0, 20)
+                        OptBtn.BackgroundColor3 = isChecked and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                        OptBtn.BorderSizePixel = 0
+                        OptBtn.Font = RageLibrary.Fonts.Label
+                        OptBtn.Text = isChecked and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
+                        OptBtn.TextColor3 = isChecked and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                        OptBtn.TextSize = 9
+                        OptBtn.TextXAlignment = Enum.TextXAlignment.Left
+                        OptBtn.ZIndex = 10001
+                        OptBtn.Parent = DropList
+                        addCorner(OptBtn, 3)
+
+                        OptBtn.MouseButton1Click:Connect(function()
+                            selectedMap[opt] = not selectedMap[opt]
+                            OptBtn.Text = selectedMap[opt] and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
+                            OptBtn.TextColor3 = selectedMap[opt] and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                            OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                            DropBtn.Text = "  " .. getSummary() .. "  ▼"
+                            RageLibrary:PlaySound(selectedMap[opt] and "ToggleOn" or "ToggleOff")
+
+                            local curTable = {}
+                            for _, o in ipairs(options) do
+                                if selectedMap[o] then table.insert(curTable, o) end
+                            end
+                            if cb then cb(curTable) end
+                        end)
+                    end
+                    local h = math.min(#options * 22 + 4, 120)
+                    DropList.CanvasSize = UDim2.new(0, 0, 0, #options * 22)
+                    return h
+                end
+
+                DropBtn.MouseButton1Click:Connect(function()
+                    isOpen = not isOpen
+                    if isOpen then
+                        local h = rebuildOptions()
+                        DropList.Size = UDim2.new(0, DropBtn.AbsoluteSize.X, 0, h)
+                        DropList.Position = UDim2.new(0, DropBtn.AbsolutePosition.X, 0, DropBtn.AbsolutePosition.Y + DropBtn.AbsoluteSize.Y + 2)
+                        DropList.Visible = true
+                        RageLibrary:PlaySound("Click")
+                    else
+                        DropList.Visible = false
+                    end
+                end)
+
+                updateCardSize()
+                return {
+                    GetValues = function()
+                        local curTable = {}
+                        for _, o in ipairs(options) do
+                            if selectedMap[o] then table.insert(curTable, o) end
+                        end
+                        return curTable
+                    end
+                }
             end
 
             function SectionObj:AddTextBox(cfg)
@@ -966,11 +1131,93 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
 end)
 
-pcall(function()
-    task.defer(function()
-        RageLibrary:PlaySound("Init")
-    end)
-end)
+-- =================================================================
+-- BUILD ALL 8 TABS & FULL DEMO FEATURES INSIDE THIS SCRIPT!
+-- =================================================================
+local Window = RageLibrary:CreateWindow({
+    Title = "PROJECT AURORA",
+    SubTitle = "ROBLOX RAGE CLIENT V1.1",
+    Size = UDim2.new(0, 720, 0, 480)
+})
 
-print("[RageLibrary] ✅ Neverlose / Gamesense / Aurora UI Library ready with custom audio!")
+-- 1. COMBAT
+local CombatTab = Window:AddTab("Combat")
+local MainCombatSec = CombatTab:AddSection("Aimbot Main", "Left")
+MainCombatSec:AddToggle({ Name = "Enable Silent Aimbot", Default = true, Keybind = Enum.KeyCode.E, Callback = function(s) end })
+MainCombatSec:AddToggle({ Name = "Automatic Fire / AutoShoot", Default = true, Keybind = Enum.KeyCode.Q, Callback = function(s) end })
+MainCombatSec:AddSlider({ Name = "Hit Chance", Min = 0, Max = 100, Default = 85, Suffix = "%", Callback = function(v) end })
+MainCombatSec:AddSlider({ Name = "Minimum Damage", Min = 1, Max = 100, Default = 35, Suffix = " HP", Callback = function(v) end })
+MainCombatSec:AddDropdown({ Name = "Hitbox Target", Options = {"Head", "HumanoidRootPart", "Torso", "Smart Random"}, Default = "Head", Callback = function(s) end })
+MainCombatSec:AddMultiSelect({ Name = "Target Verification Filters", Options = {"Wallcheck", "Teamcheck", "Visible Only", "Forcefield Check"}, Default = {"Wallcheck", "Visible Only"}, Callback = function(l) end })
+
+local TargetStrafeSec = CombatTab:AddSection("Target Strafe & Movement", "Right")
+TargetStrafeSec:AddToggle({ Name = "Enable Target Strafe", Default = true, Keybind = Enum.KeyCode.V, Callback = function(s) end })
+TargetStrafeSec:AddSlider({ Name = "Strafe Radius", Min = 2, Max = 25, Default = 12, Suffix = " studs", Callback = function(v) end })
+TargetStrafeSec:AddSlider({ Name = "Strafe Speed", Min = 10, Max = 100, Default = 45, Callback = function(v) end })
+TargetStrafeSec:AddDropdown({ Name = "Target Selection Logic", Options = {"Lowest Distance", "Lowest Health", "Highest Health", "FOV Center"}, Default = "Lowest Distance", Callback = function(s) end })
+
+-- 2. MOVEMENT
+local MoveTab = Window:AddTab("Movement")
+local MoveSec = MoveTab:AddSection("Speed & Jump Mods", "Left")
+MoveSec:AddToggle({ Name = "BunnyHop / Auto Hop", Default = true, Keybind = Enum.KeyCode.Space, Callback = function(s) end })
+MoveSec:AddToggle({ Name = "Enable Speed Hack", Default = false, Keybind = Enum.KeyCode.Z, Callback = function(s) end })
+MoveSec:AddSlider({ Name = "Speed Multiplier", Min = 1, Max = 10, Default = 3, Suffix = "x", Callback = function(v) end })
+MoveSec:AddToggle({ Name = "Infinite Jump", Default = false, Keybind = Enum.KeyCode.C, Callback = function(s) end })
+
+local FlySec = MoveTab:AddSection("Flight & Teleport", "Right")
+FlySec:AddToggle({ Name = "Flight Mode", Default = false, Keybind = Enum.KeyCode.F, Callback = function(s) end })
+FlySec:AddSlider({ Name = "Flight Speed", Min = 10, Max = 150, Default = 50, Suffix = " studs/s", Callback = function(v) end })
+FlySec:AddToggle({ Name = "Noclip Collision Disabler", Default = false, Keybind = Enum.KeyCode.N, Callback = function(s) end })
+
+-- 3. VISUALS
+local VisTab = Window:AddTab("Visuals")
+local ESP = VisTab:AddSection("Player ESP", "Left")
+ESP:AddToggle({ Name = "Bounding Box ESP", Default = true, Callback = function(s) end })
+ESP:AddToggle({ Name = "Name & Level ESP", Default = true, Callback = function(s) end })
+ESP:AddToggle({ Name = "Health Bar ESP", Default = true, Callback = function(s) end })
+ESP:AddToggle({ Name = "Weapon ESP", Default = true, Callback = function(s) end })
+ESP:AddMultiSelect({ Name = "Active ESP Components", Options = {"Box", "Name", "Health", "Armor", "Chams", "Tracers"}, Default = {"Box", "Name", "Health"}, Callback = function(l) end })
+
+local WorldVis = VisTab:AddSection("World & FOV", "Right")
+WorldVis:AddToggle({ Name = "Custom FOV Circle", Default = true, Callback = function(s) end })
+WorldVis:AddSlider({ Name = "FOV Radius", Min = 30, Max = 500, Default = 150, Suffix = " px", Callback = function(v) end })
+WorldVis:AddToggle({ Name = "Fullbright / No Shadows", Default = true, Callback = function(s) end })
+
+-- 4. MISC
+local MiscTab = Window:AddTab("Misc")
+local MiscSec = MiscTab:AddSection("General Utilities", "Left")
+MiscSec:AddToggle({ Name = "Anti-AFK Disabler", Default = true, Callback = function(s) end })
+MiscSec:AddToggle({ Name = "Auto Rejoin on Kick", Default = true, Callback = function(s) end })
+MiscSec:AddButton({ Name = "Rejoin Server", Callback = function() end })
+
+local TargetSec = MiscTab:AddSection("Target Focus & Chat", "Right")
+TargetSec:AddTextBox({ Name = "Custom Target Username", Placeholder = "Type player username...", Callback = function(t) end })
+
+-- 5. WORLD
+local WorldTab = Window:AddTab("World")
+local WorldSec = WorldTab:AddSection("Atmosphere & Skybox", "Left")
+WorldSec:AddToggle({ Name = "Custom Skybox Changer", Default = true, Callback = function(s) end })
+WorldSec:AddDropdown({ Name = "Skybox Preset", Options = {"Purple Nebula", "Cyberpunk City", "Midnight Blue"}, Default = "Purple Nebula", Callback = function(s) end })
+
+-- 6. AUTO
+local AutoTab = Window:AddTab("Auto")
+local AutoSec = AutoTab:AddSection("Auto Farming", "Left")
+AutoSec:AddToggle({ Name = "Auto Farm Mobs", Default = false, Keybind = Enum.KeyCode.X, Callback = function(s) end })
+AutoSec:AddToggle({ Name = "Auto Collect Drops", Default = true, Callback = function(s) end })
+
+-- 7. GUNS
+local GunsTab = Window:AddTab("Guns")
+local GunsSec = GunsTab:AddSection("Weapon Tuning", "Left")
+GunsSec:AddToggle({ Name = "No Recoil", Default = true, Callback = function(s) end })
+GunsSec:AddToggle({ Name = "No Spread", Default = true, Callback = function(s) end })
+GunsSec:AddToggle({ Name = "Instant Reload", Default = true, Callback = function(s) end })
+
+-- 8. SKINS
+local SkinsTab = Window:AddTab("Skins")
+local SkinsSec = SkinsTab:AddSection("Skin Changer", "Left")
+SkinsSec:AddToggle({ Name = "Enable Custom Weapon Skins", Default = true, Callback = function(s) end })
+SkinsSec:AddDropdown({ Name = "Selected Skin Theme", Options = {"Gold Dragon", "Asimov White", "Cyber Neon"}, Default = "Gold Dragon", Callback = function(s) end })
+SkinsSec:AddMultiSelect({ Name = "Active Weapon Effects", Options = {"Glow Effect", "Flame Particles", "Electric Aura"}, Default = {"Glow Effect"}, Callback = function(l) end })
+
+print("[RageLibrary] ✅ Standalone script with all 8 tabs loaded successfully!")
 return RageLibrary
