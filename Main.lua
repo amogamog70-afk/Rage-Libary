@@ -37,7 +37,9 @@ local RageLibrary = {
         OpenMenu = "rbxassetid://127366656618533",
         CloseMenu = "rbxassetid://139295675611093",
         Notification = "rbxassetid://6895092003",
-        Hitmark = "rbxassetid://160432334"
+        Hitmark = "rbxassetid://160432334",
+        Slider = "rbxassetid://92708987611847",
+        Dropdown = "rbxassetid://103866342467024"
     },
     Icons = {
         Logo            = "rbxassetid://122540234795087",
@@ -138,7 +140,7 @@ function RageLibrary:PlaySound(soundName)
     pcall(function()
         local s = Instance.new("Sound")
         s.SoundId = soundId
-        s.Volume = 0.5
+        s.Volume = 2.0
         s.Parent = game:GetService("SoundService")
         s:Play()
         -- Wait for sound to fully finish before destroying
@@ -1081,6 +1083,7 @@ function RageLibrary:CreateWindow(config)
                 end)
 
                 local isDragging = false
+                local lastSoundVal = currentVal
                 local function updateSlider(inputX)
                     local width = TrackBg.AbsoluteSize.X
                     if width <= 0 then return end
@@ -1089,6 +1092,10 @@ function RageLibrary:CreateWindow(config)
                     ValBadge.Text = tostring(currentVal) .. suffix
                     Fill.Size = UDim2.new(r, 0, 1, 0)
                     ThumbKnob.Position = UDim2.new(r, -4, 0.5, -4)
+                    if currentVal ~= lastSoundVal then
+                        lastSoundVal = currentVal
+                        RageLibrary:PlaySound("Slider")
+                    end
                     if cb then cb(currentVal) end
                 end
 
@@ -1230,7 +1237,7 @@ function RageLibrary:CreateWindow(config)
                             DropBtn.Text = "  " .. tostring(selected) .. "  ▼"
                             isOpen = false
                             DropList.Visible = false
-                            RageLibrary:PlaySound("Click")
+                            RageLibrary:PlaySound("Dropdown")
                             if cb then cb(selected) end
                         end)
                     end
@@ -1241,12 +1248,12 @@ function RageLibrary:CreateWindow(config)
 
                 DropBtn.MouseButton1Click:Connect(function()
                     isOpen = not isOpen
+                    RageLibrary:PlaySound("Dropdown")
                     if isOpen then
                         local h = rebuildOptions()
                         DropList.Size = UDim2.new(0, DropBtn.AbsoluteSize.X, 0, h)
                         DropList.Position = UDim2.new(0, DropBtn.AbsolutePosition.X, 0, DropBtn.AbsolutePosition.Y + DropBtn.AbsoluteSize.Y + 2)
                         DropList.Visible = true
-                        RageLibrary:PlaySound("Click")
                     else
                         DropList.Visible = false
                     end
@@ -1392,7 +1399,7 @@ function RageLibrary:CreateWindow(config)
                             OptBtn.TextColor3 = RageLibrary.Theme.Text
                             OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                             DropBtn.Text = "  " .. getSummary() .. "  ▼"
-                            RageLibrary:PlaySound(selectedMap[opt] and "ToggleOn" or "ToggleOff")
+                            RageLibrary:PlaySound("Dropdown")
 
                             local curTable = {}
                             for _, o in ipairs(options) do
@@ -1408,6 +1415,7 @@ function RageLibrary:CreateWindow(config)
 
                 DropBtn.MouseButton1Click:Connect(function()
                     isOpen = not isOpen
+                    RageLibrary:PlaySound("Dropdown")
                     if isOpen then
                         local h = rebuildOptions()
                         DropList.Size = UDim2.new(0, DropBtn.AbsoluteSize.X, 0, h)
