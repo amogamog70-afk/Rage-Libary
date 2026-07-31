@@ -11,12 +11,15 @@ local RageLibrary = {
             Block = Color3.fromRGB(16, 16, 20),           -- Dark Charcoal (#101014)
             Header = Color3.fromRGB(22, 22, 28),          -- Deep Slate Grey (#16161C)
             Card = Color3.fromRGB(26, 26, 32),            -- Card Grey (#1A1A20)
-            Accent = Color3.fromRGB(255, 35, 55),         -- Blood Crimson Red (#FF2337)
+            CardHover = Color3.fromRGB(36, 36, 46),       -- Hover Card Slate
+            RowHover = Color3.fromRGB(24, 24, 32),        -- Soft Row Highlight
+            Accent = Color3.fromRGB(255, 45, 70),         -- Eye-Friendly Vivid Crimson Red (#FF2D46)
             AccentDim = Color3.fromRGB(180, 20, 35),
-            Text = Color3.fromRGB(245, 245, 245),         -- Pure White
-            TextDim = Color3.fromRGB(140, 140, 150),      -- Metallic Grey
-            Stroke = Color3.fromRGB(40, 40, 48),          -- Dark Graphite
-            StrokeActive = Color3.fromRGB(255, 35, 55),    -- Crimson Glow
+            Text = Color3.fromRGB(235, 238, 245),         -- Soft Platinum White (Easy on eyes)
+            TextDim = Color3.fromRGB(150, 155, 170),      -- Soft Metallic Silver Grey
+            TextHover = Color3.fromRGB(255, 255, 255),    -- Glowing Pure White
+            Stroke = Color3.fromRGB(38, 38, 48),          -- Dark Graphite
+            StrokeActive = Color3.fromRGB(255, 45, 70),     -- Crimson Glow
             StrokeHover = Color3.fromRGB(255, 90, 110),
         }
     },
@@ -24,7 +27,7 @@ local RageLibrary = {
     Fonts = {
         Header = Enum.Font.GothamBold,
         Label = Enum.Font.GothamMedium,
-        Badge = Enum.Font.Code,
+        Badge = Enum.Font.GothamBold,
     },
     Sounds = {
         Init = "rbxassetid://85298897773513",
@@ -38,7 +41,7 @@ local RageLibrary = {
     },
     Icons = {
         Logo            = "rbxassetid://122540234795087",
-        BackgroundImage = "rbxassetid://134394687990758",
+        BackgroundImage = "rbxassetid://17545565032",
         Combat          = "rbxassetid://12614416478",      
         Movement        = "rbxassetid://136160678435000", 
         Visuals         = "rbxassetid://102976018150012", 
@@ -348,11 +351,11 @@ function RageLibrary:CreateWindow(config)
     addCorner(MainFrame, 8)
     local MainStroke = addStroke(MainFrame, RageLibrary.Theme.Stroke, 1.2)
 
-    -- Background Wallpaper Image Layer (Inset & Scaled)
+    -- Background Wallpaper Image Layer (Full Frame Stretch & Scaled)
     local MenuBgImg = Instance.new("ImageLabel")
     MenuBgImg.Name = "MenuBgWallpaper"
-    MenuBgImg.Size = UDim2.new(0.92, 0, 0.92, 0)
-    MenuBgImg.Position = UDim2.new(0.04, 0, 0.04, 0)
+    MenuBgImg.Size = UDim2.new(1, 0, 1, 0)
+    MenuBgImg.Position = UDim2.new(0, 0, 0, 0)
     MenuBgImg.BackgroundTransparency = 1
     MenuBgImg.Image = config.BackgroundImage or RageLibrary.Icons.BackgroundImage
     MenuBgImg.ImageTransparency = 0.45
@@ -477,6 +480,23 @@ function RageLibrary:CreateWindow(config)
         TabIndicator.Parent = TabBtn
         addCorner(TabIndicator, 2)
 
+        -- Tab Hover Animation
+        TabBtn.MouseEnter:Connect(function()
+            if WindowObj.ActiveTab ~= TabObj then
+                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0.2, BackgroundColor3 = RageLibrary.Theme.CardHover })
+                smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                if TabIconImg then smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextHover }) end
+            end
+        end)
+
+        TabBtn.MouseLeave:Connect(function()
+            if WindowObj.ActiveTab ~= TabObj then
+                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0.5, BackgroundColor3 = RageLibrary.Theme.Card })
+                smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
+                if TabIconImg then smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextDim }) end
+            end
+        end)
+
         local TabPage = Instance.new("Frame")
         TabPage.Name = "TabPage_" .. tabName
         TabPage.Size = UDim2.new(1, 0, 1, 0)
@@ -533,7 +553,7 @@ function RageLibrary:CreateWindow(config)
         local function selectTab()
             for _, t in ipairs(WindowObj.Tabs) do
                 t.Page.Visible = false
-                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5 })
+                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5, BackgroundColor3 = RageLibrary.Theme.Card })
                 smoothTween(t.TextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
                 if t.IconImg then
                     smoothTween(t.IconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextDim })
@@ -542,7 +562,7 @@ function RageLibrary:CreateWindow(config)
             end
             TabPage.Visible = true
             TabIndicator.Visible = true
-            smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0 })
+            smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.CardHover })
             smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.Accent })
             if TabIconImg then
                 smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.Accent })
@@ -637,7 +657,16 @@ function RageLibrary:CreateWindow(config)
                     KeyBadge.TextSize = 8.5
                     KeyBadge.Parent = ToggleRow
                     addCorner(KeyBadge, 3)
-                    addStroke(KeyBadge, RageLibrary.Theme.Accent, 1)
+                    local KeyStroke = addStroke(KeyBadge, RageLibrary.Theme.Accent, 1)
+
+                    KeyBadge.MouseEnter:Connect(function()
+                        smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                        smoothTween(KeyStroke, DUR_FAST, { Color = RageLibrary.Theme.StrokeHover })
+                    end)
+                    KeyBadge.MouseLeave:Connect(function()
+                        smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                        smoothTween(KeyStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
+                    end)
 
                     local isListening = false
                     KeyBadge.MouseButton1Click:Connect(function()
@@ -686,6 +715,16 @@ function RageLibrary:CreateWindow(config)
                 Knob.Parent = SwitchBg
                 addCorner(Knob, 5)
 
+                -- Toggle Hover Highlight Animation
+                ToggleRow.MouseEnter:Connect(function()
+                    smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                end)
+                ToggleRow.MouseLeave:Connect(function()
+                    smoothTween(ToggleRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                end)
+
                 ToggleRow.MouseButton1Click:Connect(function()
                     state = not state
                     smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
@@ -724,6 +763,16 @@ function RageLibrary:CreateWindow(config)
                 Btn.TextSize = 9.5
                 Btn.Parent = ItemsHolder
                 addCorner(Btn, 5)
+                local BtnStroke = addStroke(Btn, RageLibrary.Theme.Stroke, 1)
+
+                Btn.MouseEnter:Connect(function()
+                    smoothTween(Btn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(BtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
+                end)
+                Btn.MouseLeave:Connect(function()
+                    smoothTween(Btn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.Text })
+                    smoothTween(BtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
+                end)
 
                 Btn.MouseButton1Click:Connect(function()
                     RageLibrary:PlaySound("Click")
@@ -793,6 +842,15 @@ function RageLibrary:CreateWindow(config)
                 Fill.BorderSizePixel = 0
                 Fill.Parent = TrackBg
                 addCorner(Fill, 3)
+
+                SliderRow.MouseEnter:Connect(function()
+                    smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                end)
+                SliderRow.MouseLeave:Connect(function()
+                    smoothTween(SliderRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.Text })
+                end)
 
                 local isDragging = false
                 local function updateSlider(inputX)
@@ -866,6 +924,20 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.TextXAlignment = Enum.TextXAlignment.Left
                 DropBtn.Parent = DropRow
                 addCorner(DropBtn, 4)
+                local DropBtnStroke = addStroke(DropBtn, RageLibrary.Theme.Stroke, 1)
+
+                DropRow.MouseEnter:Connect(function()
+                    smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                    smoothTween(DropBtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
+                end)
+                DropRow.MouseLeave:Connect(function()
+                    smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
+                    smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    smoothTween(DropBtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
+                end)
 
                 -- Unclipped Floating Dropdown Menu Container
                 local DropList = Instance.new("ScrollingFrame")
@@ -894,7 +966,7 @@ function RageLibrary:CreateWindow(config)
                         local isSel = (tostring(opt) == tostring(selected))
                         local OptBtn = Instance.new("TextButton")
                         OptBtn.Size = UDim2.new(1, -4, 0, 20)
-                        OptBtn.BackgroundColor3 = isSel and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                        OptBtn.BackgroundColor3 = isSel and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isSel and (" ✓ " .. tostring(opt)) or ("   " .. tostring(opt))
@@ -904,6 +976,17 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.ZIndex = 10001
                         OptBtn.Parent = DropList
                         addCorner(OptBtn, 3)
+
+                        OptBtn.MouseEnter:Connect(function()
+                            if not isSel then
+                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
+                            end
+                        end)
+                        OptBtn.MouseLeave:Connect(function()
+                            if not isSel then
+                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.Text })
+                            end
+                        end)
 
                         OptBtn.MouseButton1Click:Connect(function()
                             selected = opt
@@ -995,6 +1078,20 @@ function RageLibrary:CreateWindow(config)
                 DropBtn.TextTruncate = Enum.TextTruncate.AtEnd
                 DropBtn.Parent = DropRow
                 addCorner(DropBtn, 4)
+                local DropBtnStroke = addStroke(DropBtn, RageLibrary.Theme.Stroke, 1)
+
+                DropRow.MouseEnter:Connect(function()
+                    smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                    smoothTween(DropBtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
+                end)
+                DropRow.MouseLeave:Connect(function()
+                    smoothTween(DropRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
+                    smoothTween(DropBtn, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    smoothTween(DropBtnStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
+                end)
 
                 -- Unclipped Floating MultiSelect Container
                 local DropList = Instance.new("ScrollingFrame")
@@ -1023,7 +1120,7 @@ function RageLibrary:CreateWindow(config)
                         local isChecked = selectedMap[opt] or false
                         local OptBtn = Instance.new("TextButton")
                         OptBtn.Size = UDim2.new(1, -4, 0, 20)
-                        OptBtn.BackgroundColor3 = isChecked and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                        OptBtn.BackgroundColor3 = isChecked and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                         OptBtn.BorderSizePixel = 0
                         OptBtn.Font = RageLibrary.Fonts.Label
                         OptBtn.Text = isChecked and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
@@ -1034,11 +1131,22 @@ function RageLibrary:CreateWindow(config)
                         OptBtn.Parent = DropList
                         addCorner(OptBtn, 3)
 
+                        OptBtn.MouseEnter:Connect(function()
+                            if not isChecked then
+                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
+                            end
+                        end)
+                        OptBtn.MouseLeave:Connect(function()
+                            if not isChecked then
+                                smoothTween(OptBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Header, TextColor3 = RageLibrary.Theme.TextDim })
+                            end
+                        end)
+
                         OptBtn.MouseButton1Click:Connect(function()
                             selectedMap[opt] = not selectedMap[opt]
                             OptBtn.Text = selectedMap[opt] and (" [✓] " .. tostring(opt)) or (" [  ] " .. tostring(opt))
                             OptBtn.TextColor3 = selectedMap[opt] and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
-                            OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.Card or RageLibrary.Theme.Header
+                            OptBtn.BackgroundColor3 = selectedMap[opt] and RageLibrary.Theme.CardHover or RageLibrary.Theme.Header
                             DropBtn.Text = "  " .. getSummary() .. "  ▼"
                             RageLibrary:PlaySound(selectedMap[opt] and "ToggleOn" or "ToggleOff")
 
@@ -1110,6 +1218,18 @@ function RageLibrary:CreateWindow(config)
                 BoxBg.BorderSizePixel = 0
                 BoxBg.Parent = BoxRow
                 addCorner(BoxBg, 4)
+                local BoxStroke = addStroke(BoxBg, RageLibrary.Theme.Stroke, 1)
+
+                BoxRow.MouseEnter:Connect(function()
+                    smoothTween(BoxRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.RowHover })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
+                    smoothTween(BoxStroke, DUR_FAST, { Color = RageLibrary.Theme.Accent })
+                end)
+                BoxRow.MouseLeave:Connect(function()
+                    smoothTween(BoxRow, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Block })
+                    smoothTween(Label, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
+                    smoothTween(BoxStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
+                end)
 
                 local Input = Instance.new("TextBox")
                 Input.Size = UDim2.new(1, -10, 1, 0)
