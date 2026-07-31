@@ -4,14 +4,27 @@
 
 local RageLibrary = {
     Enabled = true,
-    CurrentThemeName = "Neverlose Cyan",
+    CurrentThemeName = "Crimson Rage",
     Themes = {
+        ["Crimson Rage"] = {
+            Background = Color3.fromRGB(10, 10, 12),      -- Pitch Black
+            Block = Color3.fromRGB(18, 18, 22),           -- Dark Charcoal Grey
+            Header = Color3.fromRGB(24, 24, 28),          -- Deep Slate Grey
+            Card = Color3.fromRGB(28, 28, 34),            -- Card Grey
+            Accent = Color3.fromRGB(235, 35, 55),         -- Blood Red / Crimson
+            AccentDim = Color3.fromRGB(175, 20, 35),
+            Text = Color3.fromRGB(245, 245, 245),         -- Pure White
+            TextDim = Color3.fromRGB(150, 150, 160),      -- Metallic Grey
+            Stroke = Color3.fromRGB(42, 42, 50),          -- Dark Graphite
+            StrokeActive = Color3.fromRGB(235, 35, 55),    -- Crimson Glow
+            StrokeHover = Color3.fromRGB(255, 100, 115),
+        },
         ["Neverlose Cyan"] = {
             Background = Color3.fromRGB(11, 14, 20),
             Block = Color3.fromRGB(16, 20, 29),
             Header = Color3.fromRGB(22, 27, 39),
             Card = Color3.fromRGB(26, 32, 46),
-            Accent = Color3.fromRGB(0, 148, 255),       -- Neverlose Electric Cyan
+            Accent = Color3.fromRGB(0, 148, 255),
             AccentDim = Color3.fromRGB(0, 105, 185),
             Text = Color3.fromRGB(240, 244, 250),
             TextDim = Color3.fromRGB(145, 158, 178),
@@ -24,39 +37,13 @@ local RageLibrary = {
             Block = Color3.fromRGB(17, 20, 26),
             Header = Color3.fromRGB(23, 27, 35),
             Card = Color3.fromRGB(28, 33, 43),
-            Accent = Color3.fromRGB(162, 216, 61),      -- Skeet Green
+            Accent = Color3.fromRGB(162, 216, 61),
             AccentDim = Color3.fromRGB(115, 155, 40),
             Text = Color3.fromRGB(240, 245, 250),
             TextDim = Color3.fromRGB(145, 155, 170),
             Stroke = Color3.fromRGB(36, 42, 54),
             StrokeActive = Color3.fromRGB(162, 216, 61),
             StrokeHover = Color3.fromRGB(210, 240, 160),
-        },
-        ["Aurora Magenta"] = {
-            Background = Color3.fromRGB(13, 14, 21),
-            Block = Color3.fromRGB(19, 21, 31),
-            Header = Color3.fromRGB(25, 28, 42),
-            Card = Color3.fromRGB(31, 35, 52),
-            Accent = Color3.fromRGB(255, 42, 85),       -- Aurora Crimson Pink
-            AccentDim = Color3.fromRGB(190, 25, 60),
-            Text = Color3.fromRGB(245, 245, 250),
-            TextDim = Color3.fromRGB(155, 160, 180),
-            Stroke = Color3.fromRGB(42, 46, 66),
-            StrokeActive = Color3.fromRGB(255, 42, 85),
-            StrokeHover = Color3.fromRGB(255, 180, 200),
-        },
-        ["Dracula Violet"] = {
-            Background = Color3.fromRGB(15, 14, 22),
-            Block = Color3.fromRGB(22, 20, 32),
-            Header = Color3.fromRGB(28, 26, 42),
-            Card = Color3.fromRGB(34, 31, 52),
-            Accent = Color3.fromRGB(189, 147, 249),     -- Dracula Violet
-            AccentDim = Color3.fromRGB(135, 95, 190),
-            Text = Color3.fromRGB(245, 242, 252),
-            TextDim = Color3.fromRGB(160, 150, 185),
-            Stroke = Color3.fromRGB(44, 40, 64),
-            StrokeActive = Color3.fromRGB(189, 147, 249),
-            StrokeHover = Color3.fromRGB(225, 200, 255),
         }
     },
     Theme = nil, -- Assigned below
@@ -94,7 +81,7 @@ local RageLibrary = {
     ConfigFolder = "Rage/Configs"
 }
 
-RageLibrary.Theme = RageLibrary.Themes["Neverlose Cyan"]
+RageLibrary.Theme = RageLibrary.Themes["Crimson Rage"]
 
 -- Services & Local Player
 local CoreGui = game:GetService("CoreGui")
@@ -207,66 +194,81 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 99999999
 ScreenGui.Parent = ParentContainer
 
--- Top Watermark Widget (Neverlose / Project Aurora Style)
+-- Top Watermark Widget (Ultra-Sleek Red-Black-Grey Aurora Design)
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 470, 0, 32)
-Watermark.Position = UDim2.new(0.5, -235, 0, 12)
+Watermark.Size = UDim2.new(0, 480, 0, 30)
+Watermark.Position = UDim2.new(0.5, -240, 0, 10)
 Watermark.BackgroundColor3 = RageLibrary.Theme.Block
-Watermark.BackgroundTransparency = 0.08
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = false
 Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
-local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.StrokeActive, 1.2)
+local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1.2)
+
+-- Left Edge Glowing Red Accent Line
+local WMarkEdge = Instance.new("Frame")
+WMarkEdge.Size = UDim2.new(0, 3, 1, 0)
+WMarkEdge.Position = UDim2.new(0, 0, 0, 0)
+WMarkEdge.BackgroundColor3 = RageLibrary.Theme.Accent
+WMarkEdge.BorderSizePixel = 0
+WMarkEdge.Parent = Watermark
+addCorner(WMarkEdge, 3)
+
+local WMarkContent = Instance.new("Frame")
+WMarkContent.Size = UDim2.new(1, -6, 1, 0)
+WMarkContent.Position = UDim2.new(0, 6, 0, 0)
+WMarkContent.BackgroundTransparency = 1
+WMarkContent.Parent = Watermark
 
 local WMarkLayout = Instance.new("UIListLayout")
 WMarkLayout.FillDirection = Enum.FillDirection.Horizontal
 WMarkLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 WMarkLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-WMarkLayout.Padding = UDim.new(0, 7)
-WMarkLayout.Parent = Watermark
+WMarkLayout.Padding = UDim.new(0, 8)
+WMarkLayout.Parent = WMarkContent
 
 -- 1. Logo
 local WMarkLogo = Instance.new("ImageLabel")
-WMarkLogo.Size = UDim2.new(0, 18, 0, 18)
+WMarkLogo.Size = UDim2.new(0, 16, 0, 16)
 WMarkLogo.BackgroundTransparency = 1
 WMarkLogo.Image = RageLibrary.Icons.Logo
 WMarkLogo.ImageColor3 = RageLibrary.Theme.Accent
-WMarkLogo.Parent = Watermark
+WMarkLogo.Parent = WMarkContent
 
 -- 2. Cheat Title
 local WMarkTitle = Instance.new("TextLabel")
-WMarkTitle.Size = UDim2.new(0, 95, 1, 0)
+WMarkTitle.Size = UDim2.new(0, 100, 1, 0)
 WMarkTitle.BackgroundTransparency = 1
 WMarkTitle.Font = RageLibrary.Fonts.Header
-WMarkTitle.Text = "NEVERLOSE.RBX"
-WMarkTitle.TextColor3 = RageLibrary.Theme.Accent
+WMarkTitle.Text = "PROJECT AURORA"
+WMarkTitle.TextColor3 = RageLibrary.Theme.Text
 WMarkTitle.TextSize = 10.5
-WMarkTitle.Parent = Watermark
+WMarkTitle.TextXAlignment = Enum.TextXAlignment.Left
+WMarkTitle.Parent = WMarkContent
 
 local function addWMDivider()
     local div = Instance.new("Frame")
     div.Size = UDim2.new(0, 1, 0, 14)
     div.BackgroundColor3 = RageLibrary.Theme.Stroke
     div.BorderSizePixel = 0
-    div.Parent = Watermark
+    div.Parent = WMarkContent
 end
 
 addWMDivider()
 
--- 3. Player Avatar Thumbnail & Name
+-- 3. Player Avatar & Username
 local AvatarHolder = Instance.new("Frame")
-AvatarHolder.Size = UDim2.new(0, 20, 0, 20)
+AvatarHolder.Size = UDim2.new(0, 18, 0, 18)
 AvatarHolder.BackgroundTransparency = 1
-AvatarHolder.Parent = Watermark
+AvatarHolder.Parent = WMarkContent
 
 local AvatarImg = Instance.new("ImageLabel")
 AvatarImg.Size = UDim2.new(1, 0, 1, 0)
 AvatarImg.BackgroundTransparency = 1
 AvatarImg.Image = "rbxassetid://0"
 AvatarImg.Parent = AvatarHolder
-addCorner(AvatarImg, 10)
+addCorner(AvatarImg, 9)
 
 if LocalPlayer then
     pcall(function()
@@ -285,9 +287,10 @@ UserLabel.BackgroundTransparency = 1
 UserLabel.Font = RageLibrary.Fonts.Badge
 UserLabel.Text = LocalPlayer and LocalPlayer.Name or "User"
 UserLabel.TextColor3 = RageLibrary.Theme.Text
-UserLabel.TextSize = 10
+UserLabel.TextSize = 9.5
 UserLabel.TextTruncate = Enum.TextTruncate.AtEnd
-UserLabel.Parent = Watermark
+UserLabel.TextXAlignment = Enum.TextXAlignment.Left
+UserLabel.Parent = WMarkContent
 
 addWMDivider()
 
@@ -298,8 +301,8 @@ FPSLabel.BackgroundTransparency = 1
 FPSLabel.Font = RageLibrary.Fonts.Badge
 FPSLabel.Text = "144 FPS"
 FPSLabel.TextColor3 = RageLibrary.Theme.Accent
-FPSLabel.TextSize = 10
-FPSLabel.Parent = Watermark
+FPSLabel.TextSize = 9.5
+FPSLabel.Parent = WMarkContent
 
 addWMDivider()
 
@@ -310,8 +313,8 @@ PingLabel.BackgroundTransparency = 1
 PingLabel.Font = RageLibrary.Fonts.Badge
 PingLabel.Text = "15 ms"
 PingLabel.TextColor3 = RageLibrary.Theme.TextDim
-PingLabel.TextSize = 10
-PingLabel.Parent = Watermark
+PingLabel.TextSize = 9.5
+PingLabel.Parent = WMarkContent
 
 addWMDivider()
 
@@ -322,8 +325,8 @@ TimeLabel.BackgroundTransparency = 1
 TimeLabel.Font = RageLibrary.Fonts.Badge
 TimeLabel.Text = os.date("%H:%M:%S")
 TimeLabel.TextColor3 = RageLibrary.Theme.TextDim
-TimeLabel.TextSize = 10
-TimeLabel.Parent = Watermark
+TimeLabel.TextSize = 9.5
+TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
 
@@ -585,11 +588,14 @@ function RageLibrary:CreateWindow(config)
                 parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 20)
             end
 
-            function SectionObj:AddToggle(toggleText, defaultVal, callback)
-                local state = defaultVal or false
+            function SectionObj:AddToggle(cfg, legacyDefault, legacyCb)
+                local name = type(cfg) == "table" and cfg.Name or cfg
+                local state = (type(cfg) == "table" and cfg.Default) or (type(cfg) ~= "table" and legacyDefault) or false
+                local callback = (type(cfg) == "table" and cfg.Callback) or legacyCb
+                local bindKey = type(cfg) == "table" and cfg.Keybind or nil
 
                 local ToggleRow = Instance.new("TextButton")
-                ToggleRow.Size = UDim2.new(1, 0, 0, 26)
+                ToggleRow.Size = UDim2.new(1, 0, 0, 28)
                 ToggleRow.BackgroundColor3 = RageLibrary.Theme.Block
                 ToggleRow.BorderSizePixel = 0
                 ToggleRow.AutoButtonColor = false
@@ -598,37 +604,83 @@ function RageLibrary:CreateWindow(config)
                 addCorner(ToggleRow, 5)
 
                 local Label = Instance.new("TextLabel")
-                Label.Size = UDim2.new(1, -45, 1, 0)
+                Label.Size = UDim2.new(1, -90, 1, 0)
                 Label.Position = UDim2.new(0, 8, 0, 0)
                 Label.BackgroundTransparency = 1
                 Label.Font = RageLibrary.Fonts.Label
-                Label.Text = toggleText
+                Label.Text = name
                 Label.TextColor3 = RageLibrary.Theme.Text
                 Label.TextSize = 10
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = ToggleRow
 
+                -- Right Side Container (Switch + Optional Keybind)
+                local RightControls = Instance.new("Frame")
+                RightControls.Size = UDim2.new(0, 80, 1, 0)
+                RightControls.Position = UDim2.new(1, -84, 0, 0)
+                RightControls.BackgroundTransparency = 1
+                RightControls.Parent = ToggleRow
+
+                local ControlsLayout = Instance.new("UIListLayout")
+                ControlsLayout.FillDirection = Enum.FillDirection.Horizontal
+                ControlsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+                ControlsLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+                ControlsLayout.Padding = UDim.new(0, 5)
+                ControlsLayout.Parent = RightControls
+
+                -- Optional Inline Keybind Badge
+                local KeyBadge = nil
+                if bindKey then
+                    KeyBadge = Instance.new("TextButton")
+                    KeyBadge.Size = UDim2.new(0, 36, 0, 16)
+                    KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
+                    KeyBadge.BorderSizePixel = 0
+                    KeyBadge.Font = RageLibrary.Fonts.Badge
+                    KeyBadge.Text = "[" .. (typeof(bindKey) == "EnumItem" and bindKey.Name or tostring(bindKey)) .. "]"
+                    KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                    KeyBadge.TextSize = 8.5
+                    KeyBadge.Parent = RightControls
+                    addCorner(KeyBadge, 3)
+
+                    local isListening = false
+                    KeyBadge.MouseButton1Click:Connect(function()
+                        isListening = true
+                        KeyBadge.Text = "[...]"
+                        KeyBadge.TextColor3 = RageLibrary.Theme.Accent
+                        local conn
+                        conn = UserInputService.InputBegan:Connect(function(input)
+                            if input.UserInputType == Enum.UserInputType.Keyboard then
+                                isListening = false
+                                bindKey = input.KeyCode
+                                KeyBadge.Text = "[" .. bindKey.Name .. "]"
+                                KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                                conn:Disconnect()
+                            end
+                        end)
+                    end)
+                end
+
+                -- Toggle Switch
                 local SwitchBg = Instance.new("Frame")
-                SwitchBg.Size = UDim2.new(0, 30, 0, 15)
-                SwitchBg.Position = UDim2.new(1, -36, 0.5, -7)
+                SwitchBg.Size = UDim2.new(0, 28, 0, 14)
                 SwitchBg.BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header
                 SwitchBg.BorderSizePixel = 0
-                SwitchBg.Parent = ToggleRow
-                addCorner(SwitchBg, 8)
+                SwitchBg.Parent = RightControls
+                addCorner(SwitchBg, 7)
 
                 local Knob = Instance.new("Frame")
-                Knob.Size = UDim2.new(0, 11, 0, 11)
-                Knob.Position = state and UDim2.new(1, -13, 0.5, -5) or UDim2.new(0, 2, 0.5, -5)
+                Knob.Size = UDim2.new(0, 10, 0, 10)
+                Knob.Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5)
                 Knob.BackgroundColor3 = state and RageLibrary.Theme.Background or RageLibrary.Theme.TextDim
                 Knob.BorderSizePixel = 0
                 Knob.Parent = SwitchBg
-                addCorner(Knob, 6)
+                addCorner(Knob, 5)
 
                 ToggleRow.MouseButton1Click:Connect(function()
                     state = not state
                     smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
                     smoothTween(Knob, DUR_FAST, {
-                        Position = state and UDim2.new(1, -13, 0.5, -5) or UDim2.new(0, 2, 0.5, -5),
+                        Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5),
                         BackgroundColor3 = state and RageLibrary.Theme.Background or RageLibrary.Theme.TextDim
                     })
                     RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
@@ -636,11 +688,51 @@ function RageLibrary:CreateWindow(config)
                 end)
 
                 updateCardSize()
-                return { SetState = function(val) state = val end }
+                return {
+                    SetState = function(val)
+                        state = val
+                        smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
+                        smoothTween(Knob, DUR_FAST, {
+                            Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5),
+                            BackgroundColor3 = state and RageLibrary.Theme.Background or RageLibrary.Theme.TextDim
+                        })
+                    end
+                }
             end
 
-            function SectionObj:AddSlider(sliderText, minVal, maxVal, defaultVal, callback)
-                local currentVal = math.clamp(defaultVal or minVal, minVal, maxVal)
+            function SectionObj:AddButton(cfg, legacyCb)
+                local name = type(cfg) == "table" and cfg.Name or cfg
+                local callback = (type(cfg) == "table" and cfg.Callback) or legacyCb
+
+                local Btn = Instance.new("TextButton")
+                Btn.Size = UDim2.new(1, 0, 0, 26)
+                Btn.BackgroundColor3 = RageLibrary.Theme.Header
+                Btn.BorderSizePixel = 0
+                Btn.Font = RageLibrary.Fonts.Header
+                Btn.Text = name
+                Btn.TextColor3 = RageLibrary.Theme.Text
+                Btn.TextSize = 9.5
+                Btn.Parent = ItemsHolder
+                addCorner(Btn, 5)
+
+                Btn.MouseButton1Click:Connect(function()
+                    RageLibrary:PlaySound("Click")
+                    smoothTween(Btn, 0.1, { BackgroundColor3 = RageLibrary.Theme.Accent }):Completed:Connect(function()
+                        smoothTween(Btn, 0.2, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    end)
+                    if callback then callback() end
+                end)
+
+                updateCardSize()
+            end
+
+            function SectionObj:AddSlider(cfg, minVal, maxVal, defaultVal, callback)
+                local name = type(cfg) == "table" and cfg.Name or cfg
+                local min = (type(cfg) == "table" and cfg.Min) or minVal or 0
+                local max = (type(cfg) == "table" and cfg.Max) or maxVal or 100
+                local currentVal = math.clamp((type(cfg) == "table" and cfg.Default) or defaultVal or min, min, max)
+                local suffix = (type(cfg) == "table" and cfg.Suffix) or ""
+                local cb = (type(cfg) == "table" and cfg.Callback) or callback
 
                 local SliderRow = Instance.new("Frame")
                 SliderRow.Size = UDim2.new(1, 0, 0, 42)
@@ -650,22 +742,22 @@ function RageLibrary:CreateWindow(config)
                 addCorner(SliderRow, 5)
 
                 local Label = Instance.new("TextLabel")
-                Label.Size = UDim2.new(1, -60, 0, 18)
+                Label.Size = UDim2.new(1, -65, 0, 18)
                 Label.Position = UDim2.new(0, 8, 0, 3)
                 Label.BackgroundTransparency = 1
                 Label.Font = RageLibrary.Fonts.Label
-                Label.Text = sliderText
+                Label.Text = name
                 Label.TextColor3 = RageLibrary.Theme.Text
                 Label.TextSize = 10
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = SliderRow
 
                 local ValBadge = Instance.new("TextLabel")
-                ValBadge.Size = UDim2.new(0, 45, 0, 16)
-                ValBadge.Position = UDim2.new(1, -50, 0, 4)
+                ValBadge.Size = UDim2.new(0, 55, 0, 16)
+                ValBadge.Position = UDim2.new(1, -60, 0, 4)
                 ValBadge.BackgroundTransparency = 1
                 ValBadge.Font = RageLibrary.Fonts.Badge
-                ValBadge.Text = tostring(currentVal)
+                ValBadge.Text = tostring(currentVal) .. suffix
                 ValBadge.TextColor3 = RageLibrary.Theme.Accent
                 ValBadge.TextSize = 9.5
                 ValBadge.TextXAlignment = Enum.TextXAlignment.Right
@@ -681,7 +773,7 @@ function RageLibrary:CreateWindow(config)
                 TrackBg.Parent = SliderRow
                 addCorner(TrackBg, 3)
 
-                local relX = (currentVal - minVal) / (maxVal - minVal)
+                local relX = (currentVal - min) / (max - min)
                 local Fill = Instance.new("Frame")
                 Fill.Size = UDim2.new(relX, 0, 1, 0)
                 Fill.BackgroundColor3 = RageLibrary.Theme.Accent
@@ -694,10 +786,10 @@ function RageLibrary:CreateWindow(config)
                     local width = TrackBg.AbsoluteSize.X
                     if width <= 0 then return end
                     local r = math.clamp((inputX - TrackBg.AbsolutePosition.X) / width, 0, 1)
-                    currentVal = math.floor(minVal + (maxVal - minVal) * r + 0.5)
-                    ValBadge.Text = tostring(currentVal)
+                    currentVal = math.floor(min + (max - min) * r + 0.5)
+                    ValBadge.Text = tostring(currentVal) .. suffix
                     Fill.Size = UDim2.new(r, 0, 1, 0)
-                    if callback then callback(currentVal) end
+                    if cb then cb(currentVal) end
                 end
 
                 TrackBg.InputBegan:Connect(function(input)
@@ -717,6 +809,98 @@ function RageLibrary:CreateWindow(config)
                     if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                         updateSlider(input.Position.X)
                     end
+                end)
+
+                updateCardSize()
+            end
+
+            function SectionObj:AddDropdown(cfg)
+                local name = type(cfg) == "table" and cfg.Name or "Dropdown"
+                local options = type(cfg) == "table" and cfg.Options or {}
+                local selected = type(cfg) == "table" and (cfg.Default or options[1]) or ""
+                local cb = type(cfg) == "table" and cfg.Callback or nil
+
+                local DropRow = Instance.new("Frame")
+                DropRow.Size = UDim2.new(1, 0, 0, 44)
+                DropRow.BackgroundColor3 = RageLibrary.Theme.Block
+                DropRow.BorderSizePixel = 0
+                DropRow.Parent = ItemsHolder
+                addCorner(DropRow, 5)
+
+                local Label = Instance.new("TextLabel")
+                Label.Size = UDim2.new(1, -16, 0, 16)
+                Label.Position = UDim2.new(0, 8, 0, 4)
+                Label.BackgroundTransparency = 1
+                Label.Font = RageLibrary.Fonts.Label
+                Label.Text = name
+                Label.TextColor3 = RageLibrary.Theme.TextDim
+                Label.TextSize = 9.5
+                Label.TextXAlignment = Enum.TextXAlignment.Left
+                Label.Parent = DropRow
+
+                local DropBtn = Instance.new("TextButton")
+                DropBtn.Size = UDim2.new(1, -16, 0, 20)
+                DropBtn.Position = UDim2.new(0, 8, 0, 20)
+                DropBtn.BackgroundColor3 = RageLibrary.Theme.Header
+                DropBtn.BorderSizePixel = 0
+                DropBtn.Font = RageLibrary.Fonts.Badge
+                DropBtn.Text = "  " .. tostring(selected) .. " v"
+                DropBtn.TextColor3 = RageLibrary.Theme.Accent
+                DropBtn.TextSize = 9.5
+                DropBtn.TextXAlignment = Enum.TextXAlignment.Left
+                DropBtn.Parent = DropRow
+                addCorner(DropBtn, 4)
+
+                updateCardSize()
+            end
+
+            function SectionObj:AddTextBox(cfg)
+                local name = type(cfg) == "table" and cfg.Name or "Input"
+                local placeholder = type(cfg) == "table" and cfg.Placeholder or "Type here..."
+                local defaultText = type(cfg) == "table" and cfg.Default or ""
+                local cb = type(cfg) == "table" and cfg.Callback or nil
+
+                local BoxRow = Instance.new("Frame")
+                BoxRow.Size = UDim2.new(1, 0, 0, 44)
+                BoxRow.BackgroundColor3 = RageLibrary.Theme.Block
+                BoxRow.BorderSizePixel = 0
+                BoxRow.Parent = ItemsHolder
+                addCorner(BoxRow, 5)
+
+                local Label = Instance.new("TextLabel")
+                Label.Size = UDim2.new(1, -16, 0, 16)
+                Label.Position = UDim2.new(0, 8, 0, 4)
+                Label.BackgroundTransparency = 1
+                Label.Font = RageLibrary.Fonts.Label
+                Label.Text = name
+                Label.TextColor3 = RageLibrary.Theme.TextDim
+                Label.TextSize = 9.5
+                Label.TextXAlignment = Enum.TextXAlignment.Left
+                Label.Parent = BoxRow
+
+                local BoxBg = Instance.new("Frame")
+                BoxBg.Size = UDim2.new(1, -16, 0, 20)
+                BoxBg.Position = UDim2.new(0, 8, 0, 20)
+                BoxBg.BackgroundColor3 = RageLibrary.Theme.Header
+                BoxBg.BorderSizePixel = 0
+                BoxBg.Parent = BoxRow
+                addCorner(BoxBg, 4)
+
+                local Input = Instance.new("TextBox")
+                Input.Size = UDim2.new(1, -10, 1, 0)
+                Input.Position = UDim2.new(0, 5, 0, 0)
+                Input.BackgroundTransparency = 1
+                Input.Font = RageLibrary.Fonts.Badge
+                Input.PlaceholderText = placeholder
+                Input.PlaceholderColor3 = RageLibrary.Theme.TextDim
+                Input.Text = defaultText
+                Input.TextColor3 = RageLibrary.Theme.Text
+                Input.TextSize = 9.5
+                Input.TextXAlignment = Enum.TextXAlignment.Left
+                Input.Parent = BoxBg
+
+                Input.FocusLost:Connect(function(enter)
+                    if cb then cb(Input.Text) end
                 end)
 
                 updateCardSize()
