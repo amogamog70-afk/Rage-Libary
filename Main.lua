@@ -170,22 +170,22 @@ ScreenGui.DisplayOrder = 99999999
 ScreenGui.Parent = ParentContainer
 
 -- =================================================================
--- NEW WATERMARK DESIGN (100% REWRITTEN FROM SCRATCH - ULTRA SLEEK)
+-- BRAND-NEW ULTRA-FUTURISTIC WATERMARK WIDGET (100% REWRITTEN FROM SCRATCH)
 -- =================================================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 410, 0, 26)
-Watermark.Position = UDim2.new(1, -420, 0, 10)
-Watermark.BackgroundColor3 = RageLibrary.Theme.Background
+Watermark.Size = UDim2.new(0, 420, 0, 28)
+Watermark.Position = UDim2.new(1, -430, 0, 12)
+Watermark.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = false
 Watermark.Parent = ScreenGui
 addCorner(Watermark, 6)
-addStroke(Watermark, RageLibrary.Theme.Accent, 1)
+local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Accent, 1)
 
 local WMarkContent = Instance.new("Frame")
-WMarkContent.Size = UDim2.new(1, -8, 1, 0)
-WMarkContent.Position = UDim2.new(0, 4, 0, 0)
+WMarkContent.Size = UDim2.new(1, -12, 1, 0)
+WMarkContent.Position = UDim2.new(0, 6, 0, 0)
 WMarkContent.BackgroundTransparency = 1
 WMarkContent.Parent = Watermark
 
@@ -193,20 +193,37 @@ local WMarkLayout = Instance.new("UIListLayout")
 WMarkLayout.FillDirection = Enum.FillDirection.Horizontal
 WMarkLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 WMarkLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-WMarkLayout.Padding = UDim.new(0, 6)
+WMarkLayout.Padding = UDim.new(0, 7)
 WMarkLayout.Parent = WMarkContent
 
--- 1. Brand Tag Badge (Glowing Crimson)
-local BrandBadge = Instance.new("TextLabel")
-BrandBadge.Size = UDim2.new(0, 65, 0, 16)
-BrandBadge.BackgroundColor3 = RageLibrary.Theme.Accent
-BrandBadge.BorderSizePixel = 0
-BrandBadge.Font = RageLibrary.Fonts.Header
-BrandBadge.Text = "AURORA"
-BrandBadge.TextColor3 = RageLibrary.Theme.Text
-BrandBadge.TextSize = 9.5
-BrandBadge.Parent = WMarkContent
-addCorner(BrandBadge, 4)
+-- 1. Live Active Pulse Indicator
+local PulseDot = Instance.new("Frame")
+PulseDot.Size = UDim2.new(0, 8, 0, 8)
+PulseDot.BackgroundColor3 = RageLibrary.Theme.Accent
+PulseDot.BorderSizePixel = 0
+PulseDot.Parent = WMarkContent
+addCorner(PulseDot, 4)
+
+-- Pulsing animation
+task.spawn(function()
+    while PulseDot and PulseDot.Parent do
+        smoothTween(PulseDot, 0.8, { BackgroundTransparency = 0.6 })
+        task.wait(0.8)
+        smoothTween(PulseDot, 0.8, { BackgroundTransparency = 0 })
+        task.wait(0.8)
+    end
+end)
+
+-- 2. Cheat Name Tag
+local WMarkName = Instance.new("TextLabel")
+WMarkName.Size = UDim2.new(0, 105, 1, 0)
+WMarkName.BackgroundTransparency = 1
+WMarkName.Font = RageLibrary.Fonts.Header
+WMarkName.Text = "PROJECT AURORA"
+WMarkName.TextColor3 = RageLibrary.Theme.Text
+WMarkName.TextSize = 10.5
+WMarkName.TextXAlignment = Enum.TextXAlignment.Left
+WMarkName.Parent = WMarkContent
 
 local function addWMDivider()
     local div = Instance.new("Frame")
@@ -218,7 +235,7 @@ end
 
 addWMDivider()
 
--- 2. Player Avatar Headshot & Username
+-- 3. Player Headshot Avatar + Username
 local AvatarHolder = Instance.new("Frame")
 AvatarHolder.Size = UDim2.new(0, 16, 0, 16)
 AvatarHolder.BackgroundTransparency = 1
@@ -247,7 +264,7 @@ UserLabel.Size = UDim2.new(0, 75, 1, 0)
 UserLabel.BackgroundTransparency = 1
 UserLabel.Font = RageLibrary.Fonts.Badge
 UserLabel.Text = LocalPlayer and LocalPlayer.Name or "User"
-UserLabel.TextColor3 = RageLibrary.Theme.Text
+UserLabel.TextColor3 = RageLibrary.Theme.TextDim
 UserLabel.TextSize = 9
 UserLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -255,50 +272,50 @@ UserLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 3. FPS Counter
+-- 4. Dynamic FPS Counter
 local FPSLabel = Instance.new("TextLabel")
-FPSLabel.Size = UDim2.new(0, 52, 1, 0)
+FPSLabel.Size = UDim2.new(0, 48, 1, 0)
 FPSLabel.BackgroundTransparency = 1
 FPSLabel.Font = RageLibrary.Fonts.Badge
-FPSLabel.Text = "⚡ 144 FPS"
+FPSLabel.Text = "144 fps"
 FPSLabel.TextColor3 = RageLibrary.Theme.Accent
 FPSLabel.TextSize = 9
 FPSLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 4. Ping Counter
+-- 5. Ping Counter
 local PingLabel = Instance.new("TextLabel")
-PingLabel.Size = UDim2.new(0, 45, 1, 0)
+PingLabel.Size = UDim2.new(0, 40, 1, 0)
 PingLabel.BackgroundTransparency = 1
 PingLabel.Font = RageLibrary.Fonts.Badge
-PingLabel.Text = "📶 15 ms"
+PingLabel.Text = "15 ms"
 PingLabel.TextColor3 = RageLibrary.Theme.TextDim
 PingLabel.TextSize = 9
 PingLabel.Parent = WMarkContent
 
 addWMDivider()
 
--- 5. Real-Time Clock
+-- 6. Real-Time Clock
 local TimeLabel = Instance.new("TextLabel")
-TimeLabel.Size = UDim2.new(0, 60, 1, 0)
+TimeLabel.Size = UDim2.new(0, 52, 1, 0)
 TimeLabel.BackgroundTransparency = 1
 TimeLabel.Font = RageLibrary.Fonts.Badge
-TimeLabel.Text = os.date("🕒 %H:%M:%S")
+TimeLabel.Text = os.date("%H:%M:%S")
 TimeLabel.TextColor3 = RageLibrary.Theme.TextDim
 TimeLabel.TextSize = 9
 TimeLabel.Parent = WMarkContent
 
 makeDraggable(Watermark, Watermark)
 
--- Live Metrics Loop
+-- Live Metrics Updater
 local frameCount = 0
 local lastFpsCheck = tick()
 RunService.RenderStepped:Connect(function()
     frameCount = frameCount + 1
     local now = tick()
     if now - lastFpsCheck >= 1 then
-        FPSLabel.Text = "⚡ " .. frameCount .. " FPS"
+        FPSLabel.Text = frameCount .. " fps"
         frameCount = 0
         lastFpsCheck = now
 
@@ -308,8 +325,8 @@ RunService.RenderStepped:Connect(function()
             local dataPing = stats.Network.ServerStatsItem:FindFirstChild("Data Ping")
             if dataPing then pingMs = math.floor(dataPing:GetValue()) end
         end)
-        PingLabel.Text = "📶 " .. pingMs .. " ms"
-        TimeLabel.Text = os.date("🕒 %H:%M:%S")
+        PingLabel.Text = pingMs .. " ms"
+        TimeLabel.Text = os.date("%H:%M:%S")
     end
 end)
 
