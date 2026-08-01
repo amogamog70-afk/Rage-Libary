@@ -1101,6 +1101,7 @@ function RageLibrary:CreateWindow(config)
                 KeyBadge.LayoutOrder = 2
                 KeyBadge.TextColor3 = RageLibrary.Theme.Text
                 KeyBadge.TextSize = 8.5
+                KeyBadge.ZIndex = 10
                 KeyBadge.Parent = ControlsHolder
                 addCorner(KeyBadge, 5)
 
@@ -1156,59 +1157,6 @@ function RageLibrary:CreateWindow(config)
                 end)
                 KeyBadge.MouseLeave:Connect(function()
                     smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                end)
-
-                local isRebinding = false
-                local ignoreToggleRowClick = false
-
-                -- Left Click: Rebind Key
-                KeyBadge.MouseButton1Click:Connect(function()
-                    ignoreToggleRowClick = true
-                    task.delay(0.2, function() ignoreToggleRowClick = false end)
-                    if isRebinding then return end
-                    isRebinding = true
-                    KeyBadge.Text = "[...]"
-                    KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
-
-                    task.delay(0.05, function()
-                        startRebindCapture(function(input)
-                            local target = nil
-                            local isFinished = false
-
-                            if input.UserInputType == Enum.UserInputType.Keyboard then
-                                local kc = input.KeyCode
-                                if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
-                                    -- Explicit cancel / unbind key
-                                    bindKey = nil
-                                    isFinished = true
-                                elseif kc ~= Enum.KeyCode.Unknown then
-                                    target = kc
-                                    isFinished = true
-                                end
-                            elseif input.UserInputType == Enum.UserInputType.MouseButton2 or
-                                   input.UserInputType == Enum.UserInputType.MouseButton3 then
-                                target = input.UserInputType
-                                isFinished = true
-                            end
-
-                            if isFinished then
-                                isRebinding = false
-                                if target then
-                                    bindKey = target
-                                    if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
-                                        bindMode = "Toggle"
-                                    end
-                                else
-                                    bindKey = nil
-                                end
-                                refreshModeBtns()
-                                updateBadgeText()
-                                return true
-                            end
-
-                            return false -- Ignored input (e.g. M1 or mouse move), keep [...] waiting!
-                        end)
-                    end)
                 end)
 
                 -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always / Unbind)
@@ -1297,18 +1245,60 @@ function RageLibrary:CreateWindow(config)
                     end)
                 end
 
-                -- Set initial checkmark state
                 refreshModeBtns()
 
-                -- Re-refresh when menu opens
-                KeybindWidget.AncestryChanged:Connect(function() end) -- keep ref
+                KeyBadge.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if isRebinding then return end
+                        isRebinding = true
+                        KeyBadge.Text = "[...]"
+                        KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
 
-                KeyBadge.MouseButton2Click:Connect(function()
-                    if not isRebinding then
-                        ModeMenu.Position = UDim2.new(0, KeyBadge.AbsolutePosition.X, 0, KeyBadge.AbsolutePosition.Y + KeyBadge.AbsoluteSize.Y + 2)
-                        ModeMenu.Visible = not ModeMenu.Visible
-                        if ModeMenu.Visible then
-                            refreshModeBtns()
+                        task.delay(0.05, function()
+                            startRebindCapture(function(rebindInput)
+                                local target = nil
+                                local isFinished = false
+
+                                if rebindInput.UserInputType == Enum.UserInputType.Keyboard then
+                                    local kc = rebindInput.KeyCode
+                                    if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
+                                        bindKey = nil
+                                        isFinished = true
+                                    elseif kc ~= Enum.KeyCode.Unknown then
+                                        target = kc
+                                        isFinished = true
+                                    end
+                                elseif rebindInput.UserInputType == Enum.UserInputType.MouseButton2 or
+                                       rebindInput.UserInputType == Enum.UserInputType.MouseButton3 then
+                                    target = rebindInput.UserInputType
+                                    isFinished = true
+                                end
+
+                                if isFinished then
+                                    isRebinding = false
+                                    if target then
+                                        bindKey = target
+                                        if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
+                                            bindMode = "Toggle"
+                                        end
+                                    else
+                                        bindKey = nil
+                                    end
+                                    refreshModeBtns()
+                                    updateBadgeText()
+                                    return true
+                                end
+
+                                return false
+                            end)
+                        end)
+                    elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+                        if not isRebinding then
+                            ModeMenu.Position = UDim2.new(0, KeyBadge.AbsolutePosition.X, 0, KeyBadge.AbsolutePosition.Y + KeyBadge.AbsoluteSize.Y + 2)
+                            ModeMenu.Visible = not ModeMenu.Visible
+                            if ModeMenu.Visible then
+                                refreshModeBtns()
+                            end
                         end
                     end
                 end)
