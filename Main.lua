@@ -553,7 +553,7 @@ function RageLibrary:CreateWindow(config)
     config = config or {}
     local winTitle = config.Title or "Spookie.UI"
     local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.1"
-    local winSize = config.Size or UDim2.new(0, 520, 0, 340)
+    local winSize = config.Size or UDim2.new(0, 490, 0, 320)
 
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "RageMainFrame"
@@ -576,7 +576,7 @@ function RageLibrary:CreateWindow(config)
     -- Left Sidebar Navigation
     local Sidebar = Instance.new("Frame")
     Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 130, 1, 0)
+    Sidebar.Size = UDim2.new(0, 140, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
     Sidebar.BackgroundTransparency = 0
     Sidebar.BorderSizePixel = 0
@@ -585,7 +585,7 @@ function RageLibrary:CreateWindow(config)
     addCorner(Sidebar, 8)
 
     local SidebarLogo = Instance.new("ImageLabel")
-    SidebarLogo.Size = UDim2.new(0, 18, 0, 18)
+    SidebarLogo.Size = UDim2.new(0, 20, 0, 20)
     SidebarLogo.Position = UDim2.new(0, 12, 0, 10)
     SidebarLogo.BackgroundTransparency = 1
     SidebarLogo.Image = RageLibrary.Icons.Logo
@@ -593,31 +593,31 @@ function RageLibrary:CreateWindow(config)
     SidebarLogo.Parent = Sidebar
 
     local LogoTitle = Instance.new("TextLabel")
-    LogoTitle.Size = UDim2.new(1, -40, 0, 18)
-    LogoTitle.Position = UDim2.new(0, 34, 0, 8)
+    LogoTitle.Size = UDim2.new(1, -44, 0, 20)
+    LogoTitle.Position = UDim2.new(0, 38, 0, 9)
     LogoTitle.BackgroundTransparency = 1
     LogoTitle.Font = RageLibrary.Fonts.Header
     LogoTitle.Text = winTitle
     LogoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LogoTitle.TextSize = 11
+    LogoTitle.TextSize = 12
     LogoTitle.TextXAlignment = Enum.TextXAlignment.Left
     LogoTitle.Parent = Sidebar
 
     local LogoSub = Instance.new("TextLabel")
-    LogoSub.Size = UDim2.new(1, -40, 0, 14)
-    LogoSub.Position = UDim2.new(0, 34, 0, 24)
+    LogoSub.Size = UDim2.new(1, -44, 0, 14)
+    LogoSub.Position = UDim2.new(0, 38, 0, 27)
     LogoSub.BackgroundTransparency = 1
     LogoSub.Font = RageLibrary.Fonts.Label
     LogoSub.Text = winSubTitle
     LogoSub.TextColor3 = RageLibrary.Theme.TextDim
-    LogoSub.TextSize = 7.5
+    LogoSub.TextSize = 8
     LogoSub.TextXAlignment = Enum.TextXAlignment.Left
     LogoSub.Parent = Sidebar
 
     -- Scrollable Sidebar Navigation Holder
     local NavHolder = Instance.new("ScrollingFrame")
-    NavHolder.Size = UDim2.new(1, -12, 1, -48)
-    NavHolder.Position = UDim2.new(0, 6, 0, 42)
+    NavHolder.Size = UDim2.new(1, -12, 1, -54)
+    NavHolder.Position = UDim2.new(0, 6, 0, 48)
     NavHolder.BackgroundTransparency = 1
     NavHolder.BorderSizePixel = 0
     NavHolder.ClipsDescendants = false
@@ -641,8 +641,8 @@ function RageLibrary:CreateWindow(config)
     -- Content Area (Right Side)
     local ContentArea = Instance.new("Frame")
     ContentArea.Name = "ContentArea"
-    ContentArea.Size = UDim2.new(1, -138, 1, -12)
-    ContentArea.Position = UDim2.new(0, 134, 0, 6)
+    ContentArea.Size = UDim2.new(1, -148, 1, -16)
+    ContentArea.Position = UDim2.new(0, 144, 0, 8)
     ContentArea.BackgroundTransparency = 1
     ContentArea.Parent = MainFrame
 
@@ -658,20 +658,20 @@ function RageLibrary:CreateWindow(config)
         local resolvedIcon = iconId or RageLibrary.Icons[tabName]
 
         local TabBtn = Instance.new("TextButton")
-        TabBtn.Size = UDim2.new(1, 0, 0, 26)
+        TabBtn.Size = UDim2.new(1, 0, 0, 34)
         TabBtn.BackgroundColor3 = RageLibrary.Theme.Card
         TabBtn.BackgroundTransparency = 0
         TabBtn.BorderSizePixel = 0
         TabBtn.AutoButtonColor = false
         TabBtn.Text = ""
         TabBtn.Parent = NavHolder
-        addCorner(TabBtn, 5)
+        addCorner(TabBtn, 6)
 
         local TabIconImg = nil
         if resolvedIcon then
             TabIconImg = Instance.new("ImageLabel")
-            TabIconImg.Size = UDim2.new(0, 14, 0, 14)
-            TabIconImg.Position = UDim2.new(0, 8, 0.5, -7)
+            TabIconImg.Size = UDim2.new(0, 16, 0, 16)
+            TabIconImg.Position = UDim2.new(0, 10, 0.5, -8)
             TabIconImg.BackgroundTransparency = 1
             TabIconImg.Image = resolvedIcon
             TabIconImg.ImageColor3 = RageLibrary.Theme.TextDim
@@ -679,19 +679,19 @@ function RageLibrary:CreateWindow(config)
         end
 
         local TabTextLbl = Instance.new("TextLabel")
-        TabTextLbl.Size = UDim2.new(1, -26, 1, 0)
-        TabTextLbl.Position = UDim2.new(0, 25, 0, 0)
+        TabTextLbl.Size = UDim2.new(1, -34, 1, 0)
+        TabTextLbl.Position = UDim2.new(0, 32, 0, 0)
         TabTextLbl.BackgroundTransparency = 1
         TabTextLbl.Font = RageLibrary.Fonts.Header
         TabTextLbl.Text = tabName
         TabTextLbl.TextColor3 = RageLibrary.Theme.TextDim
-        TabTextLbl.TextSize = 9.5
+        TabTextLbl.TextSize = 10.5
         TabTextLbl.TextXAlignment = Enum.TextXAlignment.Left
         TabTextLbl.Parent = TabBtn
 
         local TabIndicator = Instance.new("Frame")
-        TabIndicator.Size = UDim2.new(0, 3, 0, 14)
-        TabIndicator.Position = UDim2.new(0, 2, 0.5, -7)
+        TabIndicator.Size = UDim2.new(0, 3, 0, 18)
+        TabIndicator.Position = UDim2.new(0, 3, 0.5, -9)
         TabIndicator.BackgroundColor3 = RageLibrary.Theme.Accent
         TabIndicator.Visible = false
         TabIndicator.Parent = TabBtn
@@ -824,12 +824,12 @@ function RageLibrary:CreateWindow(config)
 
             local Card = Instance.new("Frame")
             Card.Name = "Section_" .. secName
-            Card.Size = UDim2.new(1, -4, 0, 28)
+            Card.Size = UDim2.new(1, -4, 0, 36)
             Card.BackgroundColor3 = RageLibrary.Theme.Card
             Card.BackgroundTransparency = 1
             Card.BorderSizePixel = 0
             Card.Parent = parentCol
-            addCorner(Card, 5)
+            addCorner(Card, 6)
             addStroke(Card, RageLibrary.Theme.Stroke, 1)
             -- Card entrance animation
             local cardIdx = #parentCol:GetChildren()
@@ -838,33 +838,33 @@ function RageLibrary:CreateWindow(config)
             end)
 
             local CardTitle = Instance.new("TextLabel")
-            CardTitle.Size = UDim2.new(1, -16, 0, 20)
-            CardTitle.Position = UDim2.new(0, 8, 0, 4)
+            CardTitle.Size = UDim2.new(1, -20, 0, 24)
+            CardTitle.Position = UDim2.new(0, 10, 0, 6)
             CardTitle.BackgroundTransparency = 1
             CardTitle.Font = RageLibrary.Fonts.Header
             CardTitle.Text = string.upper(secName)
             CardTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-            CardTitle.TextSize = 9
+            CardTitle.TextSize = 10
             CardTitle.TextXAlignment = Enum.TextXAlignment.Left
             CardTitle.Parent = Card
 
             local ItemsHolder = Instance.new("Frame")
-            ItemsHolder.Size = UDim2.new(1, -12, 0, 0)
-            ItemsHolder.Position = UDim2.new(0, 6, 0, 24)
+            ItemsHolder.Size = UDim2.new(1, -16, 0, 0)
+            ItemsHolder.Position = UDim2.new(0, 8, 0, 30)
             ItemsHolder.BackgroundTransparency = 1
             ItemsHolder.Parent = Card
 
             local ItemsLayout = Instance.new("UIListLayout")
             ItemsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-            ItemsLayout.Padding = UDim.new(0, 4)
+            ItemsLayout.Padding = UDim.new(0, 6)
             ItemsLayout.Parent = ItemsHolder
 
             local SectionObj = {}
 
             local function updateCardSize()
                 local h = ItemsLayout.AbsoluteContentSize.Y
-                Card.Size = UDim2.new(1, -4, 0, 28 + h)
-                parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 15)
+                Card.Size = UDim2.new(1, -4, 0, 36 + h)
+                parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 20)
             end
 
             -- TOGGLE WITH RIGHT-CLICK KEYBIND MODE CONTEXT MENU (Hold / Toggle / Always)
