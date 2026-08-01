@@ -1129,10 +1129,15 @@ function RageLibrary:CreateWindow(config)
                     refreshKeybindWidget()
 
                     if not bindKey then
-                        KeyBadge.Text = "[ None ]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                        if bindMode == "Always" then
+                            KeyBadge.Text = "[ Always ]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.Accent
+                        else
+                            KeyBadge.Text = "[ None ]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                        end
                     elseif bindMode == "Always" then
-                        KeyBadge.Text = "[ Always ]"
+                        KeyBadge.Text = "[" .. kName .. ":Always]"
                         KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                     elseif bindMode == "Hold" then
                         KeyBadge.Text = "[" .. kName .. ":Hold]"
@@ -1163,8 +1168,7 @@ function RageLibrary:CreateWindow(config)
                     KeyBadge.Text = "[...]"
                     KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
 
-                    -- Wait one frame so the badge click itself doesn't get captured
-                    task.delay(0.12, function()
+                    task.delay(0.08, function()
                         startRebindCapture(function(input)
                             isRebinding = false
                             local target = nil
@@ -1173,22 +1177,21 @@ function RageLibrary:CreateWindow(config)
                                 if kc ~= Enum.KeyCode.Unknown and kc ~= Enum.KeyCode.Escape and kc ~= Enum.KeyCode.Backspace and kc ~= Enum.KeyCode.Delete then
                                     target = kc
                                 end
-                            elseif input.UserInputType == Enum.UserInputType.MouseButton1 or
-                                   input.UserInputType == Enum.UserInputType.MouseButton2 or
+                            elseif input.UserInputType == Enum.UserInputType.MouseButton2 or
                                    input.UserInputType == Enum.UserInputType.MouseButton3 then
                                 target = input.UserInputType
                             end
 
                             if target then
                                 bindKey = target
-                                -- If mode was Unbind (no key), restore Toggle if no preferred mode
-                                if bindMode == nil or bindMode == "" then
+                                if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
                                     bindMode = "Toggle"
                                 end
                             else
-                                -- Escape / Backspace / Delete = clear key
+                                -- Escape / Backspace / Delete / M1 = cancel / clear key
                                 bindKey = nil
                             end
+                            refreshModeBtns()
                             updateBadgeText()
                         end)
                     end)
@@ -1215,12 +1218,10 @@ function RageLibrary:CreateWindow(config)
                 local modeBtns = {}
 
                 local function getIsSelected(mName)
-                    if not bindKey then
-                        -- No key bound: only Unbind is active
-                        return mName == "Unbind"
+                    if mName == "Unbind" then
+                        return bindKey == nil
                     else
-                        -- Key is bound: show active mode (never Unbind)
-                        return mName ~= "Unbind" and bindMode == mName
+                        return bindKey ~= nil and bindMode == mName
                     end
                 end
 
@@ -1264,7 +1265,7 @@ function RageLibrary:CreateWindow(config)
                     MBtn.MouseButton1Click:Connect(function()
                         if m == "Unbind" then
                             bindKey = nil
-                            -- Keep bindMode so if user re-assigns a key, mode is preserved
+                            bindMode = "Toggle"
                         else
                             bindMode = m
                         end
@@ -1273,6 +1274,8 @@ function RageLibrary:CreateWindow(config)
                         ModeMenu.Visible = false
                         if bindMode == "Always" then
                             state = true
+                            kbEntry.state = true
+                            refreshKeybindWidget()
                             smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
                             smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
                             if callback then callback(true) end
