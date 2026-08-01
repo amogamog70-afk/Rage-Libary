@@ -328,6 +328,7 @@ KBTitleBar.Size = UDim2.new(1, 0, 0, 22)
 KBTitleBar.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 KBTitleBar.BorderSizePixel = 0
 KBTitleBar.Parent = KeybindWidget
+addCorner(KBTitleBar, 8)
 
 local KBIcon = Instance.new("ImageLabel")
 KBIcon.Size = UDim2.new(0, 12, 0, 12)
@@ -409,9 +410,11 @@ end)
 local function startRebindCapture(callback)
     _anyRebindActive = true
     _rebindCallbacks[1] = function(input)
-        _rebindCallbacks[1] = nil
-        _anyRebindActive = false
-        callback(input)
+        local done = callback(input)
+        if done then
+            _rebindCallbacks[1] = nil
+            _anyRebindActive = false
+        end
     end
 end
 
@@ -586,6 +589,7 @@ function RageLibrary:CreateWindow(config)
     SidebarBg.ScaleType = Enum.ScaleType.Crop
     SidebarBg.ZIndex = 0
     SidebarBg.Parent = Sidebar
+    addCorner(SidebarBg, 8)
 
     local SidebarLogo = Instance.new("ImageLabel")
     SidebarLogo.Size = UDim2.new(0, 22, 0, 22)
@@ -1168,31 +1172,43 @@ function RageLibrary:CreateWindow(config)
                     KeyBadge.Text = "[...]"
                     KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
 
-                    task.delay(0.08, function()
+                    task.delay(0.05, function()
                         startRebindCapture(function(input)
-                            isRebinding = false
                             local target = nil
+                            local isFinished = false
+
                             if input.UserInputType == Enum.UserInputType.Keyboard then
                                 local kc = input.KeyCode
-                                if kc ~= Enum.KeyCode.Unknown and kc ~= Enum.KeyCode.Escape and kc ~= Enum.KeyCode.Backspace and kc ~= Enum.KeyCode.Delete then
+                                if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
+                                    -- Explicit cancel / unbind key
+                                    bindKey = nil
+                                    isFinished = true
+                                elseif kc ~= Enum.KeyCode.Unknown then
                                     target = kc
+                                    isFinished = true
                                 end
                             elseif input.UserInputType == Enum.UserInputType.MouseButton2 or
                                    input.UserInputType == Enum.UserInputType.MouseButton3 then
                                 target = input.UserInputType
+                                isFinished = true
                             end
 
-                            if target then
-                                bindKey = target
-                                if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
-                                    bindMode = "Toggle"
+                            if isFinished then
+                                isRebinding = false
+                                if target then
+                                    bindKey = target
+                                    if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
+                                        bindMode = "Toggle"
+                                    end
+                                else
+                                    bindKey = nil
                                 end
-                            else
-                                -- Escape / Backspace / Delete / M1 = cancel / clear key
-                                bindKey = nil
+                                refreshModeBtns()
+                                updateBadgeText()
+                                return true
                             end
-                            refreshModeBtns()
-                            updateBadgeText()
+
+                            return false -- Ignored input (e.g. M1 or mouse move), keep [...] waiting!
                         end)
                     end)
                 end)
