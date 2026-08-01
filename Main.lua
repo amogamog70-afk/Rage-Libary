@@ -665,6 +665,7 @@ function RageLibrary:CreateWindow(config)
         TabBtn.BackgroundColor3 = RageLibrary.Theme.Card
         TabBtn.BackgroundTransparency = 0
         TabBtn.BorderSizePixel = 0
+        TabBtn.AutoButtonColor = false
         TabBtn.Text = ""
         TabBtn.Parent = NavHolder
         addCorner(TabBtn, 6)
@@ -777,7 +778,7 @@ function RageLibrary:CreateWindow(config)
             end
             for _, t in ipairs(WindowObj.Tabs) do
                 t.Page.Visible = false
-                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0.5, BackgroundColor3 = RageLibrary.Theme.Card })
+                smoothTween(t.Btn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.Card })
                 smoothTween(t.TextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
                 if t.IconImg then
                     smoothTween(t.IconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextDim })
@@ -1093,6 +1094,7 @@ function RageLibrary:CreateWindow(config)
                 KeyBadge.Size = UDim2.new(0, 64, 0, 18)
                 KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
                 KeyBadge.BorderSizePixel = 0
+                KeyBadge.AutoButtonColor = false
                 KeyBadge.Font = RageLibrary.Fonts.Badge
                 KeyBadge.LayoutOrder = 2
                 KeyBadge.TextColor3 = RageLibrary.Theme.Text
@@ -1237,6 +1239,7 @@ function RageLibrary:CreateWindow(config)
                     MBtn.Position = UDim2.new(0, 2, 0, 0)
                     MBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
                     MBtn.BorderSizePixel = 0
+                    MBtn.AutoButtonColor = false
                     MBtn.Font = RageLibrary.Fonts.Label
                     MBtn.Text = "  " .. m
                     MBtn.TextColor3 = RageLibrary.Theme.TextDim
