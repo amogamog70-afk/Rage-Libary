@@ -144,9 +144,17 @@ end
 
 -- Sound System Engine (uses task.spawn for zero-latency async execution)
 local SoundService = game:GetService("SoundService")
+RageLibrary.IsMenuVisible = true
+
 function RageLibrary:PlaySound(soundName)
     local soundId = self.Sounds[soundName] or soundName
     if not soundId or soundId == "" then return end
+
+    -- Mute toggle ON/OFF, click, and slider sounds when the menu is hidden
+    if RageLibrary.IsMenuVisible == false and (soundName == "ToggleOn" or soundName == "ToggleOff" or soundName == "Click" or soundName == "Slider") then
+        return
+    end
+
     task.spawn(function()
         local s = Instance.new("Sound")
         s.SoundId = soundId
@@ -435,7 +443,8 @@ local function refreshKeybindWidget()
     local activeItems = {}
     for _, item in ipairs(registeredKeybinds) do
         local keyName = item.getKeyName()
-        if item.bindKey ~= nil and keyName ~= "None" then
+        local bKey = item.getBindKey and item.getBindKey() or item.bindKey
+        if bKey ~= nil and keyName ~= "None" then
             activeItems[#activeItems + 1] = { item = item, keyName = keyName }
         end
     end
@@ -481,15 +490,16 @@ local function refreshKeybindWidget()
 
         -- Update text/colors in-place (no destroy/create)
         local item = entry.item
+        local itemState = item.getState and item.getState() or item.state
         local nameLbl = row:FindFirstChild("NameLbl")
         local keyLbl  = row:FindFirstChild("KeyLbl")
         if nameLbl then
             nameLbl.Text       = item.name
-            nameLbl.TextColor3 = item.state and RageLibrary.Theme.Text or RageLibrary.Theme.TextDim
+            nameLbl.TextColor3 = itemState and RageLibrary.Theme.Text or RageLibrary.Theme.TextDim
         end
         if keyLbl then
             keyLbl.Text       = "[" .. entry.keyName .. "]"
-            keyLbl.TextColor3 = item.state and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+            keyLbl.TextColor3 = itemState and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
         end
     end
 
@@ -1107,6 +1117,8 @@ function RageLibrary:CreateWindow(config)
 
                 local kbEntry = {
                     name = name,
+                    getBindKey = function() return bindKey end,
+                    getState = function() return state end,
                     bindKey = bindKey,
                     state = state,
                     getKeyName = function()
@@ -1126,10 +1138,9 @@ function RageLibrary:CreateWindow(config)
                 table.insert(registeredKeybinds, kbEntry)
 
                 updateBadgeText = function()
-                    local kName = kbEntry.getKeyName()
                     kbEntry.bindKey = bindKey
                     kbEntry.state = state
-                    refreshKeybindWidget()
+                    local kName = kbEntry.getKeyName()
 
                     if not bindKey then
                         if bindMode == "Always" then
@@ -1149,6 +1160,8 @@ function RageLibrary:CreateWindow(config)
                         KeyBadge.Text = "[" .. kName .. "]"
                         KeyBadge.TextColor3 = RageLibrary.Theme.Text
                     end
+
+                    refreshKeybindWidget()
                 end
                 updateBadgeText()
 
@@ -2263,6 +2276,7 @@ function RageLibrary:CreateWindow(config)
         if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == toggleKey then
             if shardsActive then return end
             menuVisible = not menuVisible
+            RageLibrary.IsMenuVisible = menuVisible
 
             if menuVisible then
                 -- OPEN: shards fly in → show menu
