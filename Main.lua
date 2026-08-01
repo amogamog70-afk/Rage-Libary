@@ -1172,10 +1172,10 @@ function RageLibrary:CreateWindow(config)
                     smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
                 end)
 
-                -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always / Unbind)
+                -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always)
                 local ModeMenu = Instance.new("Frame")
                 ModeMenu.Name = "ModeMenu_" .. name
-                ModeMenu.Size = UDim2.new(0, 95, 0, 94)
+                ModeMenu.Size = UDim2.new(0, 95, 0, 71)
                 ModeMenu.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
                 ModeMenu.BorderSizePixel = 0
                 ModeMenu.Visible = false
@@ -1189,15 +1189,11 @@ function RageLibrary:CreateWindow(config)
                 ModeLayout.Padding = UDim.new(0, 2)
                 ModeLayout.Parent = ModeMenu
 
-                local modes = {"Toggle", "Hold", "Always", "Unbind"}
+                local modes = {"Toggle", "Hold", "Always"}
                 local modeBtns = {}
 
                 local function getIsSelected(mName)
-                    if mName == "Unbind" then
-                        return bindKey == nil
-                    else
-                        return bindKey ~= nil and bindMode == mName
-                    end
+                    return bindKey ~= nil and bindMode == mName
                 end
 
                 local function refreshModeBtns()
@@ -1238,12 +1234,7 @@ function RageLibrary:CreateWindow(config)
                     end)
 
                     MBtn.MouseButton1Click:Connect(function()
-                        if m == "Unbind" then
-                            bindKey = nil
-                            bindMode = "Toggle"
-                        else
-                            bindMode = m
-                        end
+                        bindMode = m
                         refreshModeBtns()
                         updateBadgeText()
                         ModeMenu.Visible = false
@@ -1260,14 +1251,37 @@ function RageLibrary:CreateWindow(config)
 
                 refreshModeBtns()
 
+                local lastLeftClickTime = 0
+                local singleClickTask = nil
+
                 KeyBadge.InputBegan:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if isRebinding then return end
-                        isRebinding = true
-                        KeyBadge.Text = "[...]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
+                        local now = tick()
+                        if now - lastLeftClickTime < 0.32 then
+                            -- DOUBLE CLICK: Unbind key!
+                            if singleClickTask then
+                                task.cancel(singleClickTask)
+                                singleClickTask = nil
+                            end
+                            cancelRebindCapture()
+                            isRebinding = false
+                            bindKey = nil
+                            refreshModeBtns()
+                            updateBadgeText()
+                            lastLeftClickTime = 0
+                            return
+                        end
 
-                        task.delay(0.05, function()
+                        lastLeftClickTime = now
+
+                        -- SINGLE CLICK: Schedule rebind capture if no 2nd click follows
+                        singleClickTask = task.delay(0.28, function()
+                            singleClickTask = nil
+                            if isRebinding then return end
+                            isRebinding = true
+                            KeyBadge.Text = "[...]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
+
                             startRebindCapture(function(rebindInput)
                                 local target = nil
                                 local isFinished = false
@@ -1291,7 +1305,7 @@ function RageLibrary:CreateWindow(config)
                                     isRebinding = false
                                     if target then
                                         bindKey = target
-                                        if bindMode == nil or bindMode == "" or bindMode == "Unbind" then
+                                        if bindMode == nil or bindMode == "" then
                                             bindMode = "Toggle"
                                         end
                                     else
