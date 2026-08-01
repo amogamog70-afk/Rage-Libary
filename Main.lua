@@ -1099,7 +1099,7 @@ function RageLibrary:CreateWindow(config)
                 addCorner(Knob, 5)
 
                 -- Always create KeyBadge (defaults to [ None ] if bindKey is nil)
-                KeyBadge = Instance.new("TextButton")
+                local KeyBadge = Instance.new("TextButton")
                 KeyBadge.Size = UDim2.new(0, 64, 0, 18)
                 KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
                 KeyBadge.BorderSizePixel = 0
@@ -1160,7 +1160,7 @@ function RageLibrary:CreateWindow(config)
                 }
                 table.insert(registeredKeybinds, kbEntry)
 
-                updateBadgeText = function()
+                local function updateBadgeText()
                     kbEntry.bindKey = bindKey
                     kbEntry.state = state
                     local kName = kbEntry.getKeyName()
