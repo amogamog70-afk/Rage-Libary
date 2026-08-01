@@ -146,6 +146,18 @@ end
 local SoundService = game:GetService("SoundService")
 RageLibrary.IsMenuVisible = true
 
+-- Automatic 5-Second Memory Cleaner & Garbage Collector Loop
+task.spawn(function()
+    while true do
+        task.wait(5)
+        pcall(function()
+            if collectgarbage then
+                collectgarbage("collect")
+            end
+        end)
+    end
+end)
+
 function RageLibrary:PlaySound(soundName)
     local soundId = self.Sounds[soundName] or soundName
     if not soundId or soundId == "" then return end
