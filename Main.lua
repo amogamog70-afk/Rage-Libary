@@ -7,20 +7,20 @@ local RageLibrary = {
     CurrentThemeName = "Crimson Rage",
     Themes = {
         ["Crimson Rage"] = {
-            Background = Color3.fromRGB(10, 10, 12),      -- Pitch Black (#0A0A0C)
-            Block = Color3.fromRGB(16, 16, 20),           -- Dark Charcoal (#101014)
-            Header = Color3.fromRGB(22, 22, 28),          -- Deep Slate Grey (#16161C)
-            Card = Color3.fromRGB(26, 26, 32),            -- Card Grey (#1A1A20)
-            CardHover = Color3.fromRGB(36, 36, 46),       -- Hover Card Slate
-            RowHover = Color3.fromRGB(24, 24, 32),        -- Soft Row Highlight
+            Background = Color3.fromRGB(10, 10, 10),      -- Pitch Black (#0A0A0A)
+            Block = Color3.fromRGB(14, 14, 14),           -- Dark Charcoal (#0E0E0E)
+            Header = Color3.fromRGB(18, 18, 18),          -- Dark Slate (#121212)
+            Card = Color3.fromRGB(16, 16, 16),            -- Card Grey (#101010)
+            CardHover = Color3.fromRGB(24, 24, 24),       -- Hover Card Slate (#181818)
+            RowHover = Color3.fromRGB(20, 20, 20),        -- Soft Row Highlight (#141414)
             Accent = Color3.fromRGB(255, 45, 70),         -- Eye-Friendly Vivid Crimson Red (#FF2D46)
             AccentDim = Color3.fromRGB(180, 20, 35),
             Text = Color3.fromRGB(255, 255, 255),         -- Pure Crisp White (#FFFFFF)
-            TextDim = Color3.fromRGB(220, 225, 235),       -- Light Silver White (#DCE1EB)
+            TextDim = Color3.fromRGB(180, 180, 180),      -- Light Silver White (#B4B4B4)
             TextHover = Color3.fromRGB(255, 255, 255),    -- Pure White Glow (#FFFFFF)
-            Stroke = Color3.fromRGB(28, 28, 36),          -- Subtle Dark Graphite (#1C1C24)
-            StrokeActive = Color3.fromRGB(40, 40, 52),     -- Subtle Slate
-            StrokeHover = Color3.fromRGB(40, 40, 52),
+            Stroke = Color3.fromRGB(22, 22, 22),          -- Subtle Dark Border (#161616)
+            StrokeActive = Color3.fromRGB(32, 32, 32),     -- Subtle Slate (#202020)
+            StrokeHover = Color3.fromRGB(32, 32, 32),
         }
     },
     Theme = nil,
@@ -213,9 +213,9 @@ ScreenGui.Parent = ParentContainer
 -- =================================================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 420, 0, 26)
-Watermark.Position = UDim2.new(1, -430, 0, 12)
-Watermark.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+Watermark.Size = UDim2.new(0, 350, 0, 22)
+Watermark.Position = UDim2.new(1, -360, 0, 10)
+Watermark.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = true
 Watermark.Parent = ScreenGui
@@ -333,9 +333,9 @@ makeDraggable(Watermark, Watermark)
 -- =================================================================
 local KeybindWidget = Instance.new("Frame")
 KeybindWidget.Name = "RageKeybindList"
-KeybindWidget.Size = UDim2.new(0, 160, 0, 30)
-KeybindWidget.Position = UDim2.new(0, 15, 0.4, 0)
-KeybindWidget.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+KeybindWidget.Size = UDim2.new(0, 140, 0, 24)
+KeybindWidget.Position = UDim2.new(0, 10, 0.4, 0)
+KeybindWidget.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 KeybindWidget.BorderSizePixel = 0
 KeybindWidget.ClipsDescendants = true
 KeybindWidget.Parent = ScreenGui
@@ -517,14 +517,14 @@ local function refreshKeybindWidget()
         end
     end
 
-    local targetHeight = math.max(26, 26 + count * 19)
-    smoothTween(KeybindWidget, DUR_FAST, { Size = UDim2.new(0, 160, 0, targetHeight) })
+    local targetHeight = math.max(24, 24 + count * 18)
+    smoothTween(KeybindWidget, DUR_FAST, { Size = UDim2.new(0, 140, 0, targetHeight) })
 end
 
--- Play Init Sound on first frame (after GUI is ready)
-task.defer(function()
-    RageLibrary:PlaySound("Init")
-end)
+-- Play Init Sound on first frame (Disabled per user request)
+-- task.defer(function()
+--     RageLibrary:PlaySound("Init")
+-- end)
 
 -- Live Metrics Updater
 local frameCount = 0
@@ -553,7 +553,7 @@ function RageLibrary:CreateWindow(config)
     config = config or {}
     local winTitle = config.Title or "Spookie.UI"
     local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.1"
-    local winSize = config.Size or UDim2.new(0, 720, 0, 480)
+    local winSize = config.Size or UDim2.new(0, 520, 0, 340)
 
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "RageMainFrame"
@@ -573,23 +573,10 @@ function RageLibrary:CreateWindow(config)
         Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
     }):Play()
 
-    -- Background Wallpaper Image Layer (Full Frame Stretch & Scaled)
-    local MenuBgImg = Instance.new("ImageLabel")
-    MenuBgImg.Name = "MenuBgWallpaper"
-    MenuBgImg.Size = UDim2.new(1, 0, 1, 0)
-    MenuBgImg.Position = UDim2.new(0, 0, 0, 0)
-    MenuBgImg.BackgroundTransparency = 1
-    MenuBgImg.Image = config.BackgroundImage or RageLibrary.Icons.BackgroundImage
-    MenuBgImg.ImageTransparency = 0.45
-    MenuBgImg.ScaleType = Enum.ScaleType.Crop
-    MenuBgImg.ZIndex = 0
-    MenuBgImg.Parent = MainFrame
-    addCorner(MenuBgImg, 8)
-
     -- Left Sidebar Navigation
     local Sidebar = Instance.new("Frame")
     Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 165, 1, 0)
+    Sidebar.Size = UDim2.new(0, 130, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
     Sidebar.BackgroundTransparency = 0
     Sidebar.BorderSizePixel = 0
@@ -597,53 +584,40 @@ function RageLibrary:CreateWindow(config)
     Sidebar.Parent = MainFrame
     addCorner(Sidebar, 8)
 
-    -- Sidebar Background Wallpaper
-    local SidebarBg = Instance.new("ImageLabel")
-    SidebarBg.Name = "SidebarBg"
-    SidebarBg.Size = UDim2.new(1, 0, 1, 0)
-    SidebarBg.Position = UDim2.new(0, 0, 0, 0)
-    SidebarBg.BackgroundTransparency = 1
-    SidebarBg.Image = "rbxassetid://5510463866"
-    SidebarBg.ImageTransparency = 0.5
-    SidebarBg.ScaleType = Enum.ScaleType.Crop
-    SidebarBg.ZIndex = 0
-    SidebarBg.Parent = Sidebar
-    addCorner(SidebarBg, 8)
-
     local SidebarLogo = Instance.new("ImageLabel")
-    SidebarLogo.Size = UDim2.new(0, 22, 0, 22)
-    SidebarLogo.Position = UDim2.new(0, 16, 0, 12)
+    SidebarLogo.Size = UDim2.new(0, 18, 0, 18)
+    SidebarLogo.Position = UDim2.new(0, 12, 0, 10)
     SidebarLogo.BackgroundTransparency = 1
     SidebarLogo.Image = RageLibrary.Icons.Logo
     SidebarLogo.ImageColor3 = RageLibrary.Theme.Accent
     SidebarLogo.Parent = Sidebar
 
     local LogoTitle = Instance.new("TextLabel")
-    LogoTitle.Size = UDim2.new(1, -50, 0, 24)
-    LogoTitle.Position = UDim2.new(0, 44, 0, 11)
+    LogoTitle.Size = UDim2.new(1, -40, 0, 18)
+    LogoTitle.Position = UDim2.new(0, 34, 0, 8)
     LogoTitle.BackgroundTransparency = 1
     LogoTitle.Font = RageLibrary.Fonts.Header
     LogoTitle.Text = winTitle
     LogoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LogoTitle.TextSize = 13
+    LogoTitle.TextSize = 11
     LogoTitle.TextXAlignment = Enum.TextXAlignment.Left
     LogoTitle.Parent = Sidebar
 
     local LogoSub = Instance.new("TextLabel")
-    LogoSub.Size = UDim2.new(1, -50, 0, 16)
-    LogoSub.Position = UDim2.new(0, 44, 0, 31)
+    LogoSub.Size = UDim2.new(1, -40, 0, 14)
+    LogoSub.Position = UDim2.new(0, 34, 0, 24)
     LogoSub.BackgroundTransparency = 1
     LogoSub.Font = RageLibrary.Fonts.Label
     LogoSub.Text = winSubTitle
     LogoSub.TextColor3 = RageLibrary.Theme.TextDim
-    LogoSub.TextSize = 8.5
+    LogoSub.TextSize = 7.5
     LogoSub.TextXAlignment = Enum.TextXAlignment.Left
     LogoSub.Parent = Sidebar
 
     -- Scrollable Sidebar Navigation Holder
     local NavHolder = Instance.new("ScrollingFrame")
-    NavHolder.Size = UDim2.new(1, -16, 1, -70)
-    NavHolder.Position = UDim2.new(0, 8, 0, 56)
+    NavHolder.Size = UDim2.new(1, -12, 1, -48)
+    NavHolder.Position = UDim2.new(0, 6, 0, 42)
     NavHolder.BackgroundTransparency = 1
     NavHolder.BorderSizePixel = 0
     NavHolder.ClipsDescendants = false
@@ -667,8 +641,8 @@ function RageLibrary:CreateWindow(config)
     -- Content Area (Right Side)
     local ContentArea = Instance.new("Frame")
     ContentArea.Name = "ContentArea"
-    ContentArea.Size = UDim2.new(1, -175, 1, -16)
-    ContentArea.Position = UDim2.new(0, 170, 0, 8)
+    ContentArea.Size = UDim2.new(1, -138, 1, -12)
+    ContentArea.Position = UDim2.new(0, 134, 0, 6)
     ContentArea.BackgroundTransparency = 1
     ContentArea.Parent = MainFrame
 
@@ -684,20 +658,20 @@ function RageLibrary:CreateWindow(config)
         local resolvedIcon = iconId or RageLibrary.Icons[tabName]
 
         local TabBtn = Instance.new("TextButton")
-        TabBtn.Size = UDim2.new(1, 0, 0, 34)
+        TabBtn.Size = UDim2.new(1, 0, 0, 26)
         TabBtn.BackgroundColor3 = RageLibrary.Theme.Card
         TabBtn.BackgroundTransparency = 0
         TabBtn.BorderSizePixel = 0
         TabBtn.AutoButtonColor = false
         TabBtn.Text = ""
         TabBtn.Parent = NavHolder
-        addCorner(TabBtn, 6)
+        addCorner(TabBtn, 5)
 
         local TabIconImg = nil
         if resolvedIcon then
             TabIconImg = Instance.new("ImageLabel")
-            TabIconImg.Size = UDim2.new(0, 16, 0, 16)
-            TabIconImg.Position = UDim2.new(0, 10, 0.5, -8)
+            TabIconImg.Size = UDim2.new(0, 14, 0, 14)
+            TabIconImg.Position = UDim2.new(0, 8, 0.5, -7)
             TabIconImg.BackgroundTransparency = 1
             TabIconImg.Image = resolvedIcon
             TabIconImg.ImageColor3 = RageLibrary.Theme.TextDim
@@ -705,19 +679,19 @@ function RageLibrary:CreateWindow(config)
         end
 
         local TabTextLbl = Instance.new("TextLabel")
-        TabTextLbl.Size = UDim2.new(1, -34, 1, 0)
-        TabTextLbl.Position = UDim2.new(0, 32, 0, 0)
+        TabTextLbl.Size = UDim2.new(1, -26, 1, 0)
+        TabTextLbl.Position = UDim2.new(0, 25, 0, 0)
         TabTextLbl.BackgroundTransparency = 1
         TabTextLbl.Font = RageLibrary.Fonts.Header
         TabTextLbl.Text = tabName
         TabTextLbl.TextColor3 = RageLibrary.Theme.TextDim
-        TabTextLbl.TextSize = 10.5
+        TabTextLbl.TextSize = 9.5
         TabTextLbl.TextXAlignment = Enum.TextXAlignment.Left
         TabTextLbl.Parent = TabBtn
 
         local TabIndicator = Instance.new("Frame")
-        TabIndicator.Size = UDim2.new(0, 3, 0, 18)
-        TabIndicator.Position = UDim2.new(0, 3, 0.5, -9)
+        TabIndicator.Size = UDim2.new(0, 3, 0, 14)
+        TabIndicator.Position = UDim2.new(0, 2, 0.5, -7)
         TabIndicator.BackgroundColor3 = RageLibrary.Theme.Accent
         TabIndicator.Visible = false
         TabIndicator.Parent = TabBtn
@@ -850,12 +824,12 @@ function RageLibrary:CreateWindow(config)
 
             local Card = Instance.new("Frame")
             Card.Name = "Section_" .. secName
-            Card.Size = UDim2.new(1, -4, 0, 36)
+            Card.Size = UDim2.new(1, -4, 0, 28)
             Card.BackgroundColor3 = RageLibrary.Theme.Card
             Card.BackgroundTransparency = 1
             Card.BorderSizePixel = 0
             Card.Parent = parentCol
-            addCorner(Card, 6)
+            addCorner(Card, 5)
             addStroke(Card, RageLibrary.Theme.Stroke, 1)
             -- Card entrance animation
             local cardIdx = #parentCol:GetChildren()
@@ -864,33 +838,33 @@ function RageLibrary:CreateWindow(config)
             end)
 
             local CardTitle = Instance.new("TextLabel")
-            CardTitle.Size = UDim2.new(1, -20, 0, 24)
-            CardTitle.Position = UDim2.new(0, 10, 0, 6)
+            CardTitle.Size = UDim2.new(1, -16, 0, 20)
+            CardTitle.Position = UDim2.new(0, 8, 0, 4)
             CardTitle.BackgroundTransparency = 1
             CardTitle.Font = RageLibrary.Fonts.Header
             CardTitle.Text = string.upper(secName)
             CardTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-            CardTitle.TextSize = 10
+            CardTitle.TextSize = 9
             CardTitle.TextXAlignment = Enum.TextXAlignment.Left
             CardTitle.Parent = Card
 
             local ItemsHolder = Instance.new("Frame")
-            ItemsHolder.Size = UDim2.new(1, -16, 0, 0)
-            ItemsHolder.Position = UDim2.new(0, 8, 0, 30)
+            ItemsHolder.Size = UDim2.new(1, -12, 0, 0)
+            ItemsHolder.Position = UDim2.new(0, 6, 0, 24)
             ItemsHolder.BackgroundTransparency = 1
             ItemsHolder.Parent = Card
 
             local ItemsLayout = Instance.new("UIListLayout")
             ItemsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-            ItemsLayout.Padding = UDim.new(0, 6)
+            ItemsLayout.Padding = UDim.new(0, 4)
             ItemsLayout.Parent = ItemsHolder
 
             local SectionObj = {}
 
             local function updateCardSize()
                 local h = ItemsLayout.AbsoluteContentSize.Y
-                Card.Size = UDim2.new(1, -4, 0, 36 + h)
-                parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 20)
+                Card.Size = UDim2.new(1, -4, 0, 28 + h)
+                parentCol.CanvasSize = UDim2.new(0, 0, 0, (columnSide == "right" and RightLayout or LeftLayout).AbsoluteContentSize.Y + 15)
             end
 
             -- TOGGLE WITH RIGHT-CLICK KEYBIND MODE CONTEXT MENU (Hold / Toggle / Always)
