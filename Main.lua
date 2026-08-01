@@ -1098,260 +1098,271 @@ function RageLibrary:CreateWindow(config)
                 Knob.Parent = SwitchBg
                 addCorner(Knob, 5)
 
-                -- Always create KeyBadge (defaults to [ None ] if bindKey is nil)
-                local KeyBadge = Instance.new("TextButton")
-                KeyBadge.Size = UDim2.new(0, 64, 0, 18)
-                KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
-                KeyBadge.BorderSizePixel = 0
-                KeyBadge.AutoButtonColor = false
-                KeyBadge.Font = RageLibrary.Fonts.Badge
-                KeyBadge.LayoutOrder = 2
-                KeyBadge.TextColor3 = RageLibrary.Theme.Text
-                KeyBadge.TextSize = 8.5
-                KeyBadge.ZIndex = 10
-                KeyBadge.Parent = ControlsHolder
-                addCorner(KeyBadge, 5)
+                local hasKeybind = false
+                if type(cfg) == "table" then
+                    if cfg.Keybind ~= nil or cfg.HasKeybind == true or cfg.Keybindable == true or cfg.Bindable == true then
+                        hasKeybind = true
+                    end
+                end
 
-                local kbEntry = {
-                    name = name,
-                    getBindKey = function() return bindKey end,
-                    getState = function() return state end,
-                    bindKey = bindKey,
-                    state = state,
-                    getKeyName = function()
-                        if typeof(bindKey) == "EnumItem" then
-                            if bindKey.EnumType == Enum.KeyCode then
-                                return bindKey.Name
-                            elseif bindKey.EnumType == Enum.UserInputType then
-                                if bindKey == Enum.UserInputType.MouseButton1 then return "M1"
-                                elseif bindKey == Enum.UserInputType.MouseButton2 then return "M2"
-                                elseif bindKey == Enum.UserInputType.MouseButton3 then return "M3"
-                                else return bindKey.Name end
+                local kbEntry = nil
+                local updateBadgeText = function() end
+
+                if hasKeybind then
+                    local KeyBadge = Instance.new("TextButton")
+                    KeyBadge.Size = UDim2.new(0, 64, 0, 18)
+                    KeyBadge.BackgroundColor3 = RageLibrary.Theme.Header
+                    KeyBadge.BorderSizePixel = 0
+                    KeyBadge.AutoButtonColor = false
+                    KeyBadge.Font = RageLibrary.Fonts.Badge
+                    KeyBadge.LayoutOrder = 2
+                    KeyBadge.TextColor3 = RageLibrary.Theme.Text
+                    KeyBadge.TextSize = 8.5
+                    KeyBadge.ZIndex = 10
+                    KeyBadge.Parent = ControlsHolder
+                    addCorner(KeyBadge, 5)
+
+                    kbEntry = {
+                        name = name,
+                        getBindKey = function() return bindKey end,
+                        getState = function() return state end,
+                        bindKey = bindKey,
+                        state = state,
+                        getKeyName = function()
+                            if typeof(bindKey) == "EnumItem" then
+                                if bindKey.EnumType == Enum.KeyCode then
+                                    return bindKey.Name
+                                elseif bindKey.EnumType == Enum.UserInputType then
+                                    if bindKey == Enum.UserInputType.MouseButton1 then return "M1"
+                                    elseif bindKey == Enum.UserInputType.MouseButton2 then return "M2"
+                                    elseif bindKey == Enum.UserInputType.MouseButton3 then return "M3"
+                                    else return bindKey.Name end
+                                end
+                            end
+                            return tostring(bindKey or "None")
+                        end,
+                        onInputBegan = function()
+                            if not bindKey then return end
+                            if bindMode == "Toggle" then
+                                state = not state
+                                refreshKeybindWidget()
+                                smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
+                                smoothTween(Knob, DUR_FAST, { Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5) })
+                                RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
+                                if callback then callback(state) end
+                            elseif bindMode == "Hold" then
+                                state = true
+                                refreshKeybindWidget()
+                                smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
+                                smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
+                                if callback then callback(true) end
+                            end
+                        end,
+                        onInputEnded = function()
+                            if bindKey and bindMode == "Hold" then
+                                state = false
+                                refreshKeybindWidget()
+                                smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                                smoothTween(Knob, DUR_FAST, { Position = UDim2.new(0, 2, 0.5, -5) })
+                                if callback then callback(false) end
                             end
                         end
-                        return tostring(bindKey or "None")
-                    end,
-                    onInputBegan = function()
-                        if not bindKey then return end
-                        if bindMode == "Toggle" then
-                            state = not state
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
-                            smoothTween(Knob, DUR_FAST, { Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5) })
-                            RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
-                            if callback then callback(state) end
+                    }
+                    table.insert(registeredKeybinds, kbEntry)
+
+                    updateBadgeText = function()
+                        kbEntry.bindKey = bindKey
+                        kbEntry.state = state
+                        local kName = kbEntry.getKeyName()
+
+                        if not bindKey then
+                            if bindMode == "Always" then
+                                KeyBadge.Text = "[ Always ]"
+                                KeyBadge.TextColor3 = RageLibrary.Theme.Accent
+                            else
+                                KeyBadge.Text = "[ None ]"
+                                KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                            end
+                        elseif bindMode == "Always" then
+                            KeyBadge.Text = "[" .. kName .. ":Always]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                         elseif bindMode == "Hold" then
-                            state = true
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
-                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
-                            if callback then callback(true) end
-                        end
-                    end,
-                    onInputEnded = function()
-                        if bindKey and bindMode == "Hold" then
-                            state = false
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(0, 2, 0.5, -5) })
-                            if callback then callback(false) end
-                        end
-                    end
-                }
-                table.insert(registeredKeybinds, kbEntry)
-
-                local function updateBadgeText()
-                    kbEntry.bindKey = bindKey
-                    kbEntry.state = state
-                    local kName = kbEntry.getKeyName()
-
-                    if not bindKey then
-                        if bindMode == "Always" then
-                            KeyBadge.Text = "[ Always ]"
+                            KeyBadge.Text = "[" .. kName .. ":Hold]"
                             KeyBadge.TextColor3 = RageLibrary.Theme.Accent
                         else
-                            KeyBadge.Text = "[ None ]"
-                            KeyBadge.TextColor3 = RageLibrary.Theme.TextDim
+                            KeyBadge.Text = "[" .. kName .. "]"
+                            KeyBadge.TextColor3 = RageLibrary.Theme.Text
                         end
-                    elseif bindMode == "Always" then
-                        KeyBadge.Text = "[" .. kName .. ":Always]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.Accent
-                    elseif bindMode == "Hold" then
-                        KeyBadge.Text = "[" .. kName .. ":Hold]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.Accent
-                    else
-                        KeyBadge.Text = "[" .. kName .. "]"
-                        KeyBadge.TextColor3 = RageLibrary.Theme.Text
+
+                        refreshKeybindWidget()
+                    end
+                    updateBadgeText()
+
+                    KeyBadge.MouseEnter:Connect(function()
+                        smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
+                    end)
+                    KeyBadge.MouseLeave:Connect(function()
+                        smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                    end)
+
+                    -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always)
+                    local ModeMenu = Instance.new("Frame")
+                    ModeMenu.Name = "ModeMenu_" .. name
+                    ModeMenu.Size = UDim2.new(0, 95, 0, 71)
+                    ModeMenu.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+                    ModeMenu.BorderSizePixel = 0
+                    ModeMenu.Visible = false
+                    ModeMenu.ZIndex = 20000
+                    ModeMenu.Parent = ScreenGui
+                    addCorner(ModeMenu, 5)
+                    addStroke(ModeMenu, RageLibrary.Theme.Stroke, 1)
+
+                    local ModeLayout = Instance.new("UIListLayout")
+                    ModeLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                    ModeLayout.Padding = UDim.new(0, 2)
+                    ModeLayout.Parent = ModeMenu
+
+                    local modes = {"Toggle", "Hold", "Always"}
+                    local modeBtns = {}
+
+                    local function getIsSelected(mName)
+                        return bindKey ~= nil and bindMode == mName
                     end
 
-                    refreshKeybindWidget()
-                end
-                updateBadgeText()
-
-                KeyBadge.MouseEnter:Connect(function()
-                    smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.CardHover })
-                end)
-                KeyBadge.MouseLeave:Connect(function()
-                    smoothTween(KeyBadge, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                end)
-
-                -- Right Click Context Menu for Mode Selection (Hold / Toggle / Always)
-                local ModeMenu = Instance.new("Frame")
-                ModeMenu.Name = "ModeMenu_" .. name
-                ModeMenu.Size = UDim2.new(0, 95, 0, 71)
-                ModeMenu.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
-                ModeMenu.BorderSizePixel = 0
-                ModeMenu.Visible = false
-                ModeMenu.ZIndex = 20000
-                ModeMenu.Parent = ScreenGui
-                addCorner(ModeMenu, 5)
-                addStroke(ModeMenu, RageLibrary.Theme.Stroke, 1)
-
-                local ModeLayout = Instance.new("UIListLayout")
-                ModeLayout.SortOrder = Enum.SortOrder.LayoutOrder
-                ModeLayout.Padding = UDim.new(0, 2)
-                ModeLayout.Parent = ModeMenu
-
-                local modes = {"Toggle", "Hold", "Always"}
-                local modeBtns = {}
-
-                local function getIsSelected(mName)
-                    return bindKey ~= nil and bindMode == mName
-                end
-
-                local function refreshModeBtns()
-                    for mName, mBtn in pairs(modeBtns) do
-                        local isSelected = getIsSelected(mName)
-                        mBtn.BackgroundColor3 = isSelected and RageLibrary.Theme.CardHover or Color3.fromRGB(16, 16, 22)
-                        mBtn.TextColor3 = isSelected and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
-                        mBtn.Text = (isSelected and "✓ " or "  ") .. mName
+                    local function refreshModeBtns()
+                        for mName, mBtn in pairs(modeBtns) do
+                            local isSelected = getIsSelected(mName)
+                            mBtn.BackgroundColor3 = isSelected and RageLibrary.Theme.CardHover or Color3.fromRGB(16, 16, 22)
+                            mBtn.TextColor3 = isSelected and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                            mBtn.Text = (isSelected and "✓ " or "  ") .. mName
+                        end
                     end
-                end
 
-                for _, m in ipairs(modes) do
-                    local MBtn = Instance.new("TextButton")
-                    MBtn.Size = UDim2.new(1, -4, 0, 21)
-                    MBtn.Position = UDim2.new(0, 2, 0, 0)
-                    MBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
-                    MBtn.BorderSizePixel = 0
-                    MBtn.AutoButtonColor = false
-                    MBtn.Font = RageLibrary.Fonts.Label
-                    MBtn.Text = "  " .. m
-                    MBtn.TextColor3 = RageLibrary.Theme.TextDim
-                    MBtn.TextSize = 9
-                    MBtn.TextXAlignment = Enum.TextXAlignment.Left
-                    MBtn.ZIndex = 20001
-                    MBtn.Parent = ModeMenu
-                    addCorner(MBtn, 4)
-                    modeBtns[m] = MBtn
+                    for _, m in ipairs(modes) do
+                        local MBtn = Instance.new("TextButton")
+                        MBtn.Size = UDim2.new(1, -4, 0, 21)
+                        MBtn.Position = UDim2.new(0, 2, 0, 0)
+                        MBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+                        MBtn.BorderSizePixel = 0
+                        MBtn.AutoButtonColor = false
+                        MBtn.Font = RageLibrary.Fonts.Label
+                        MBtn.Text = "  " .. m
+                        MBtn.TextColor3 = RageLibrary.Theme.TextDim
+                        MBtn.TextSize = 9
+                        MBtn.TextXAlignment = Enum.TextXAlignment.Left
+                        MBtn.ZIndex = 20001
+                        MBtn.Parent = ModeMenu
+                        addCorner(MBtn, 4)
+                        modeBtns[m] = MBtn
 
-                    MBtn.MouseEnter:Connect(function()
-                        if not getIsSelected(m) then
-                            smoothTween(MBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
-                        end
-                    end)
-                    MBtn.MouseLeave:Connect(function()
-                        if not getIsSelected(m) then
-                            smoothTween(MBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(16, 16, 22), TextColor3 = RageLibrary.Theme.TextDim })
-                        end
-                    end)
-
-                    MBtn.MouseButton1Click:Connect(function()
-                        bindMode = m
-                        refreshModeBtns()
-                        updateBadgeText()
-                        ModeMenu.Visible = false
-                        if bindMode == "Always" then
-                            state = true
-                            kbEntry.state = true
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
-                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
-                            if callback then callback(true) end
-                        end
-                    end)
-                end
-
-                refreshModeBtns()
-
-                local lastLeftClickTime = 0
-                local singleClickTask = nil
-
-                KeyBadge.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        local now = tick()
-                        if now - lastLeftClickTime < 0.32 then
-                            -- DOUBLE CLICK: Unbind key!
-                            if singleClickTask then
-                                task.cancel(singleClickTask)
-                                singleClickTask = nil
+                        MBtn.MouseEnter:Connect(function()
+                            if not getIsSelected(m) then
+                                smoothTween(MBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
                             end
-                            cancelRebindCapture()
-                            isRebinding = false
-                            bindKey = nil
+                        end)
+                        MBtn.MouseLeave:Connect(function()
+                            if not getIsSelected(m) then
+                                smoothTween(MBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(16, 16, 22), TextColor3 = RageLibrary.Theme.TextDim })
+                            end
+                        end)
+
+                        MBtn.MouseButton1Click:Connect(function()
+                            bindMode = m
                             refreshModeBtns()
                             updateBadgeText()
-                            lastLeftClickTime = 0
-                            return
-                        end
-
-                        lastLeftClickTime = now
-
-                        -- SINGLE CLICK: Schedule rebind capture if no 2nd click follows
-                        singleClickTask = task.delay(0.28, function()
-                            singleClickTask = nil
-                            if isRebinding then return end
-                            isRebinding = true
-                            KeyBadge.Text = "[...]"
-                            KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
-
-                            startRebindCapture(function(rebindInput)
-                                local target = nil
-                                local isFinished = false
-
-                                if rebindInput.UserInputType == Enum.UserInputType.Keyboard then
-                                    local kc = rebindInput.KeyCode
-                                    if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
-                                        bindKey = nil
-                                        isFinished = true
-                                    elseif kc ~= Enum.KeyCode.Unknown then
-                                        target = kc
-                                        isFinished = true
-                                    end
-                                elseif rebindInput.UserInputType == Enum.UserInputType.MouseButton2 or
-                                       rebindInput.UserInputType == Enum.UserInputType.MouseButton3 then
-                                    target = rebindInput.UserInputType
-                                    isFinished = true
-                                end
-
-                                if isFinished then
-                                    isRebinding = false
-                                    if target then
-                                        bindKey = target
-                                        if bindMode == nil or bindMode == "" then
-                                            bindMode = "Toggle"
-                                        end
-                                    else
-                                        bindKey = nil
-                                    end
-                                    refreshModeBtns()
-                                    updateBadgeText()
-                                    return true
-                                end
-
-                                return false
-                            end)
+                            ModeMenu.Visible = false
+                            if bindMode == "Always" then
+                                state = true
+                                if kbEntry then kbEntry.state = true end
+                                refreshKeybindWidget()
+                                smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
+                                smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
+                                if callback then callback(true) end
+                            end
                         end)
-                    elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-                        if not isRebinding then
-                            ModeMenu.Position = UDim2.new(0, KeyBadge.AbsolutePosition.X, 0, KeyBadge.AbsolutePosition.Y + KeyBadge.AbsoluteSize.Y + 2)
-                            ModeMenu.Visible = not ModeMenu.Visible
-                            if ModeMenu.Visible then
+                    end
+
+                    refreshModeBtns()
+
+                    local lastLeftClickTime = 0
+                    local singleClickTask = nil
+
+                    KeyBadge.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            local now = tick()
+                            if now - lastLeftClickTime < 0.32 then
+                                -- DOUBLE CLICK: Unbind key!
+                                if singleClickTask then
+                                    task.cancel(singleClickTask)
+                                    singleClickTask = nil
+                                end
+                                cancelRebindCapture()
+                                isRebinding = false
+                                bindKey = nil
                                 refreshModeBtns()
+                                updateBadgeText()
+                                lastLeftClickTime = 0
+                                return
+                            end
+
+                            lastLeftClickTime = now
+
+                            -- SINGLE CLICK: Schedule rebind capture if no 2nd click follows
+                            singleClickTask = task.delay(0.28, function()
+                                singleClickTask = nil
+                                if isRebinding then return end
+                                isRebinding = true
+                                KeyBadge.Text = "[...]"
+                                KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
+
+                                startRebindCapture(function(rebindInput)
+                                    local target = nil
+                                    local isFinished = false
+
+                                    if rebindInput.UserInputType == Enum.UserInputType.Keyboard then
+                                        local kc = rebindInput.KeyCode
+                                        if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
+                                            bindKey = nil
+                                            isFinished = true
+                                        elseif kc ~= Enum.KeyCode.Unknown then
+                                            target = kc
+                                            isFinished = true
+                                        end
+                                    elseif rebindInput.UserInputType == Enum.UserInputType.MouseButton2 or
+                                           rebindInput.UserInputType == Enum.UserInputType.MouseButton3 then
+                                        target = rebindInput.UserInputType
+                                        isFinished = true
+                                    end
+
+                                    if isFinished then
+                                        isRebinding = false
+                                        if target then
+                                            bindKey = target
+                                            if bindMode == nil or bindMode == "" then
+                                                bindMode = "Toggle"
+                                            end
+                                        else
+                                            bindKey = nil
+                                        end
+                                        refreshModeBtns()
+                                        updateBadgeText()
+                                        return true
+                                    end
+
+                                    return false
+                                end)
+                            end)
+                        elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+                            if not isRebinding then
+                                ModeMenu.Position = UDim2.new(0, KeyBadge.AbsolutePosition.X, 0, KeyBadge.AbsolutePosition.Y + KeyBadge.AbsoluteSize.Y + 2)
+                                ModeMenu.Visible = not ModeMenu.Visible
+                                if ModeMenu.Visible then
+                                    refreshModeBtns()
+                                end
                             end
                         end
-                    end
-                end)
+                    end)
+                end
 
                 -- Toggle Hover Animation
                 ToggleRow.MouseEnter:Connect(function()
