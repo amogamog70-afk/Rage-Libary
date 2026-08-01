@@ -188,8 +188,8 @@ ScreenGui.Parent = ParentContainer
 -- =================================================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "RageWatermark"
-Watermark.Size = UDim2.new(0, 390, 0, 26)
-Watermark.Position = UDim2.new(1, -400, 0, 12)
+Watermark.Size = UDim2.new(0, 420, 0, 26)
+Watermark.Position = UDim2.new(1, -430, 0, 12)
 Watermark.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
 Watermark.BorderSizePixel = 0
 Watermark.ClipsDescendants = true
@@ -198,7 +198,7 @@ addCorner(Watermark, 8)
 local WMarkStroke = addStroke(Watermark, RageLibrary.Theme.Stroke, 1)
 
 local WMarkContent = Instance.new("Frame")
-WMarkContent.Size = UDim2.new(1, -24, 1, 0)
+WMarkContent.Size = UDim2.new(1, -36, 1, 0)
 WMarkContent.Position = UDim2.new(0, 14, 0, 0)
 WMarkContent.BackgroundTransparency = 1
 WMarkContent.Parent = Watermark
@@ -445,7 +445,7 @@ function RageLibrary:CreateWindow(config)
 
     -- Entrance animation: slide up + fade in
     TweenService:Create(MainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0.08,
+        BackgroundTransparency = 0,
         Position = UDim2.new(0.5, -winSize.X.Offset / 2, 0.5, -winSize.Y.Offset / 2)
     }):Play()
 
@@ -467,9 +467,9 @@ function RageLibrary:CreateWindow(config)
     Sidebar.Name = "Sidebar"
     Sidebar.Size = UDim2.new(0, 165, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
-    Sidebar.BackgroundTransparency = 0.10
+    Sidebar.BackgroundTransparency = 0
     Sidebar.BorderSizePixel = 0
-    Sidebar.ClipsDescendants = true
+    Sidebar.ClipsDescendants = false
     Sidebar.Parent = MainFrame
     addCorner(Sidebar, 8)
 
@@ -517,10 +517,11 @@ function RageLibrary:CreateWindow(config)
 
     -- Scrollable Sidebar Navigation Holder
     local NavHolder = Instance.new("ScrollingFrame")
-    NavHolder.Size = UDim2.new(1, -16, 1, -65)
+    NavHolder.Size = UDim2.new(1, -16, 1, -70)
     NavHolder.Position = UDim2.new(0, 8, 0, 56)
     NavHolder.BackgroundTransparency = 1
     NavHolder.BorderSizePixel = 0
+    NavHolder.ClipsDescendants = false
     NavHolder.ScrollBarThickness = 2
     NavHolder.ScrollBarImageColor3 = RageLibrary.Theme.Accent
     NavHolder.Parent = Sidebar
@@ -529,6 +530,10 @@ function RageLibrary:CreateWindow(config)
     NavLayout.SortOrder = Enum.SortOrder.LayoutOrder
     NavLayout.Padding = UDim.new(0, 4)
     NavLayout.Parent = NavHolder
+
+    local NavPadding = Instance.new("UIPadding")
+    NavPadding.PaddingBottom = UDim.new(0, 6)
+    NavPadding.Parent = NavHolder
 
     NavLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         NavHolder.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
@@ -556,7 +561,7 @@ function RageLibrary:CreateWindow(config)
         local TabBtn = Instance.new("TextButton")
         TabBtn.Size = UDim2.new(1, 0, 0, 34)
         TabBtn.BackgroundColor3 = RageLibrary.Theme.Card
-        TabBtn.BackgroundTransparency = 0.5
+        TabBtn.BackgroundTransparency = 0
         TabBtn.BorderSizePixel = 0
         TabBtn.Text = ""
         TabBtn.Parent = NavHolder
@@ -595,7 +600,7 @@ function RageLibrary:CreateWindow(config)
         -- Tab Hover Animation
         TabBtn.MouseEnter:Connect(function()
             if WindowObj.ActiveTab ~= TabObj then
-                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0.2, BackgroundColor3 = RageLibrary.Theme.CardHover })
+                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.CardHover })
                 smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextHover })
                 if TabIconImg then smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextHover }) end
             end
@@ -603,7 +608,7 @@ function RageLibrary:CreateWindow(config)
 
         TabBtn.MouseLeave:Connect(function()
             if WindowObj.ActiveTab ~= TabObj then
-                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0.5, BackgroundColor3 = RageLibrary.Theme.Card })
+                smoothTween(TabBtn, DUR_FAST, { BackgroundTransparency = 0, BackgroundColor3 = RageLibrary.Theme.Card })
                 smoothTween(TabTextLbl, DUR_FAST, { TextColor3 = RageLibrary.Theme.TextDim })
                 if TabIconImg then smoothTween(TabIconImg, DUR_FAST, { ImageColor3 = RageLibrary.Theme.TextDim }) end
             end
@@ -729,7 +734,7 @@ function RageLibrary:CreateWindow(config)
             -- Card entrance animation
             local cardIdx = #parentCol:GetChildren()
             task.delay(cardIdx * 0.05, function()
-                smoothTween(Card, 0.3, { BackgroundTransparency = 0.10 })
+                smoothTween(Card, 0.3, { BackgroundTransparency = 0 })
             end)
 
             local CardTitle = Instance.new("TextLabel")
@@ -1101,28 +1106,43 @@ function RageLibrary:CreateWindow(config)
                 ModeLayout.Parent = ModeMenu
 
                 local modes = {"Toggle", "Hold", "Always", "Unbind"}
+                local modeBtns = {}
+
+                local function refreshModeBtns()
+                    for mName, mBtn in pairs(modeBtns) do
+                        local isSelected = (bindMode == mName) or (mName == "Unbind" and not bindKey)
+                        mBtn.BackgroundColor3 = isSelected and RageLibrary.Theme.CardHover or Color3.fromRGB(16, 16, 22)
+                        mBtn.TextColor3 = isSelected and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                        -- checkmark prefix
+                        mBtn.Text = (isSelected and "✓ " or "  ") .. mName
+                    end
+                end
+
                 for _, m in ipairs(modes) do
                     local MBtn = Instance.new("TextButton")
                     MBtn.Size = UDim2.new(1, -4, 0, 21)
                     MBtn.Position = UDim2.new(0, 2, 0, 0)
-                    MBtn.BackgroundColor3 = (bindMode == m) and RageLibrary.Theme.CardHover or Color3.fromRGB(16, 16, 22)
+                    MBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
                     MBtn.BorderSizePixel = 0
                     MBtn.Font = RageLibrary.Fonts.Label
                     MBtn.Text = "  " .. m
-                    MBtn.TextColor3 = (bindMode == m) and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+                    MBtn.TextColor3 = RageLibrary.Theme.TextDim
                     MBtn.TextSize = 9
                     MBtn.TextXAlignment = Enum.TextXAlignment.Left
                     MBtn.ZIndex = 20001
                     MBtn.Parent = ModeMenu
                     addCorner(MBtn, 4)
+                    modeBtns[m] = MBtn
 
                     MBtn.MouseEnter:Connect(function()
-                        if bindMode ~= m then
+                        local isSelected = (bindMode == m) or (m == "Unbind" and not bindKey)
+                        if not isSelected then
                             smoothTween(MBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
                         end
                     end)
                     MBtn.MouseLeave:Connect(function()
-                        if bindMode ~= m then
+                        local isSelected = (bindMode == m) or (m == "Unbind" and not bindKey)
+                        if not isSelected then
                             smoothTween(MBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(16, 16, 22), TextColor3 = RageLibrary.Theme.TextDim })
                         end
                     end)
@@ -1134,6 +1154,7 @@ function RageLibrary:CreateWindow(config)
                         else
                             bindMode = m
                         end
+                        refreshModeBtns()
                         updateBadgeText()
                         ModeMenu.Visible = false
                         if bindMode == "Always" then
@@ -1145,10 +1166,19 @@ function RageLibrary:CreateWindow(config)
                     end)
                 end
 
+                -- Set initial checkmark state
+                refreshModeBtns()
+
+                -- Re-refresh when menu opens
+                KeybindWidget.AncestryChanged:Connect(function() end) -- keep ref
+
                 KeyBadge.MouseButton2Click:Connect(function()
                     if not isRebinding then
                         ModeMenu.Position = UDim2.new(0, KeyBadge.AbsolutePosition.X, 0, KeyBadge.AbsolutePosition.Y + KeyBadge.AbsoluteSize.Y + 2)
                         ModeMenu.Visible = not ModeMenu.Visible
+                        if ModeMenu.Visible then
+                            refreshModeBtns()
+                        end
                     end
                 end)
 
@@ -1956,18 +1986,168 @@ function RageLibrary:CreateWindow(config)
         return TabObj
     end
 
-    -- Toggle Window Visibility Listener (RightShift or custom config.ToggleKey)
+    -- ================================================================
+    -- SHARD BREAK / ASSEMBLE ANIMATION
+    -- ================================================================
     local toggleKey = config.ToggleKey or RageLibrary.ToggleKey or Enum.KeyCode.RightShift
     local menuVisible = true
+    local shardsActive = false
+
+    -- Shard layout definitions: each covers a slice of the menu
+    -- {relX, relY, relW, relH, rotFly, flyDX, flyDY, delay}
+    local shardDefs = {
+        { rx=0,    ry=0,    rw=0.48, rh=0.52, rot=-28, dx=-260, dy=-180, d=0.00 },
+        { rx=0.46, ry=0,    rw=0.54, rh=0.44, rot=22,  dx=280,  dy=-160, d=0.04 },
+        { rx=0,    ry=0.50, rw=0.40, rh=0.50, rot=20,  dx=-240, dy=200,  d=0.02 },
+        { rx=0.38, ry=0.42, rw=0.62, rh=0.58, rot=-24, dx=270,  dy=190,  d=0.06 },
+        { rx=0.18, ry=0.20, rw=0.36, rh=0.45, rot=35,  dx=-60,  dy=-280, d=0.03 },
+        { rx=0.54, ry=0.18, rw=0.32, rh=0.38, rot=-30, dx=120,  dy=-260, d=0.05 },
+        { rx=0.10, ry=0.68, rw=0.30, rh=0.32, rot=-18, dx=-200, dy=240,  d=0.01 },
+        { rx=0.58, ry=0.62, rw=0.28, rh=0.38, rot=26,  dx=220,  dy=220,  d=0.07 },
+    }
+
+    local shards = {}
+
+    local function createShards()
+        -- Remove old shards
+        for _, s in ipairs(shards) do s:Destroy() end
+        shards = {}
+
+        local mPos  = MainFrame.AbsolutePosition
+        local mSize = MainFrame.AbsoluteSize
+
+        for i, def in ipairs(shardDefs) do
+            local sx = mPos.X  + def.rx * mSize.X
+            local sy = mPos.Y  + def.ry * mSize.Y
+            local sw = def.rw  * mSize.X
+            local sh = def.rh  * mSize.Y
+
+            local shard = Instance.new("Frame")
+            shard.Name  = "MenuShard_" .. i
+            shard.Size  = UDim2.new(0, sw, 0, sh)
+            shard.Position = UDim2.new(0, sx, 0, sy)
+            shard.BackgroundColor3 = RageLibrary.Theme.Background
+            shard.BackgroundTransparency = 0
+            shard.BorderSizePixel = 0
+            shard.ZIndex = 50000
+            shard.Parent = ScreenGui
+            -- Slight inner gradient overlay for realism
+            local innerStroke = Instance.new("UIStroke")
+            innerStroke.Color = RageLibrary.Theme.Accent
+            innerStroke.Thickness = 1
+            innerStroke.Transparency = 0.6
+            innerStroke.Parent = shard
+            -- Random edge rounding for crooked feel
+            local corners = {3, 5, 8, 4, 6, 2, 7, 5}
+            addCorner(shard, corners[(i % #corners) + 1])
+            shards[i] = shard
+        end
+    end
+
+    local function animateShardsOut(onDone)
+        shardsActive = true
+        createShards()
+
+        local mPos  = MainFrame.AbsolutePosition
+        local mSize = MainFrame.AbsoluteSize
+
+        local done = 0
+        local total = #shards
+
+        for i, shard in ipairs(shards) do
+            local def = shardDefs[i]
+            local targetX = shard.AbsolutePosition.X + def.dx
+            local targetY = shard.AbsolutePosition.Y + def.dy
+
+            task.delay(def.d, function()
+                -- Animate to exploded position with rotation
+                TweenService:Create(shard,
+                    TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+                    {
+                        Position = UDim2.new(0, targetX, 0, targetY),
+                        Rotation = def.rot,
+                        BackgroundTransparency = 0.85,
+                    }
+                ):Play()
+
+                task.delay(0.55, function()
+                    done = done + 1
+                    if done >= total then
+                        shardsActive = false
+                        if onDone then onDone() end
+                    end
+                end)
+            end)
+        end
+    end
+
+    local function animateShardsIn(onDone)
+        if #shards == 0 then
+            createShards()
+            local mPos  = MainFrame.AbsolutePosition
+            local mSize = MainFrame.AbsoluteSize
+            for i, shard in ipairs(shards) do
+                local def = shardDefs[i]
+                local originX = mPos.X + def.rx * mSize.X
+                local originY = mPos.Y + def.ry * mSize.Y
+                shard.Position = UDim2.new(0, originX + def.dx, 0, originY + def.dy)
+                shard.Rotation = def.rot
+                shard.BackgroundTransparency = 0.85
+            end
+        end
+
+        shardsActive = true
+        local mPos  = MainFrame.AbsolutePosition
+        local mSize = MainFrame.AbsoluteSize
+
+        local done = 0
+        local total = #shards
+
+        for i, shard in ipairs(shards) do
+            local def = shardDefs[i]
+            local targetX = mPos.X + def.rx * mSize.X
+            local targetY = mPos.Y + def.ry * mSize.Y
+
+            task.delay(def.d, function()
+                -- Fly back into place
+                TweenService:Create(shard,
+                    TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+                    {
+                        Position = UDim2.new(0, targetX, 0, targetY),
+                        Rotation = 0,
+                        BackgroundTransparency = 0,
+                    }
+                ):Play()
+
+                task.delay(0.52, function()
+                    done = done + 1
+                    if done >= total then
+                        shardsActive = false
+                        -- Cleanup shards and show real frame
+                        for _, s in ipairs(shards) do s:Destroy() end
+                        shards = {}
+                        if onDone then onDone() end
+                    end
+                end)
+            end)
+        end
+    end
 
     UserInputService.InputBegan:Connect(function(input, gpe)
         if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == toggleKey then
+            if shardsActive then return end
             menuVisible = not menuVisible
+
             if menuVisible then
-                MainFrame.Visible = true
+                -- OPEN: shards fly in → show menu
                 RageLibrary:PlaySound("OpenMenu")
-                smoothTween(MainFrame, DUR_FAST, { BackgroundTransparency = 0.08 })
+                MainFrame.Visible = false
+                animateShardsIn(function()
+                    MainFrame.Visible = true
+                    MainFrame.BackgroundTransparency = 0
+                end)
             else
+                -- CLOSE: snapshot → shards fly out → hide menu
                 RageLibrary:PlaySound("CloseMenu")
                 -- Close any open drop lists / mode menus
                 for _, child in ipairs(ScreenGui:GetChildren()) do
@@ -1975,13 +2155,17 @@ function RageLibrary:CreateWindow(config)
                         child.Visible = false
                     end
                 end
-                smoothTween(MainFrame, DUR_FAST, { BackgroundTransparency = 1 })
-                task.delay(DUR_FAST, function()
-                    if not menuVisible then MainFrame.Visible = false end
+                animateShardsOut(function()
+                    MainFrame.Visible = false
+                    for _, s in ipairs(shards) do s:Destroy() end
+                    shards = {}
                 end)
+                -- Hide real menu immediately so shards take over
+                task.delay(0.05, function() MainFrame.Visible = false end)
             end
         end
     end)
+
 
     return WindowObj
 end
