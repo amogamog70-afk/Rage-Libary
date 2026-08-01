@@ -553,7 +553,7 @@ function RageLibrary:CreateWindow(config)
     config = config or {}
     local winTitle = config.Title or "Spookie.UI"
     local winSubTitle = config.SubTitle or "ROBLOX RAGE CLIENT V1.1"
-    local winSize = config.Size or UDim2.new(0, 490, 0, 320)
+    local winSize = config.Size or UDim2.new(0, 430, 0, 280)
 
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "RageMainFrame"
@@ -576,7 +576,7 @@ function RageLibrary:CreateWindow(config)
     -- Left Sidebar Navigation
     local Sidebar = Instance.new("Frame")
     Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 140, 1, 0)
+    Sidebar.Size = UDim2.new(0, 120, 1, 0)
     Sidebar.BackgroundColor3 = RageLibrary.Theme.Block
     Sidebar.BackgroundTransparency = 0
     Sidebar.BorderSizePixel = 0
@@ -585,39 +585,39 @@ function RageLibrary:CreateWindow(config)
     addCorner(Sidebar, 8)
 
     local SidebarLogo = Instance.new("ImageLabel")
-    SidebarLogo.Size = UDim2.new(0, 20, 0, 20)
-    SidebarLogo.Position = UDim2.new(0, 12, 0, 10)
+    SidebarLogo.Size = UDim2.new(0, 16, 0, 16)
+    SidebarLogo.Position = UDim2.new(0, 10, 0, 8)
     SidebarLogo.BackgroundTransparency = 1
     SidebarLogo.Image = RageLibrary.Icons.Logo
     SidebarLogo.ImageColor3 = RageLibrary.Theme.Accent
     SidebarLogo.Parent = Sidebar
 
     local LogoTitle = Instance.new("TextLabel")
-    LogoTitle.Size = UDim2.new(1, -44, 0, 20)
-    LogoTitle.Position = UDim2.new(0, 38, 0, 9)
+    LogoTitle.Size = UDim2.new(1, -34, 0, 16)
+    LogoTitle.Position = UDim2.new(0, 30, 0, 7)
     LogoTitle.BackgroundTransparency = 1
     LogoTitle.Font = RageLibrary.Fonts.Header
     LogoTitle.Text = winTitle
     LogoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LogoTitle.TextSize = 12
+    LogoTitle.TextSize = 10.5
     LogoTitle.TextXAlignment = Enum.TextXAlignment.Left
     LogoTitle.Parent = Sidebar
 
     local LogoSub = Instance.new("TextLabel")
-    LogoSub.Size = UDim2.new(1, -44, 0, 14)
-    LogoSub.Position = UDim2.new(0, 38, 0, 27)
+    LogoSub.Size = UDim2.new(1, -34, 0, 12)
+    LogoSub.Position = UDim2.new(0, 30, 0, 22)
     LogoSub.BackgroundTransparency = 1
     LogoSub.Font = RageLibrary.Fonts.Label
     LogoSub.Text = winSubTitle
     LogoSub.TextColor3 = RageLibrary.Theme.TextDim
-    LogoSub.TextSize = 8
+    LogoSub.TextSize = 7
     LogoSub.TextXAlignment = Enum.TextXAlignment.Left
     LogoSub.Parent = Sidebar
 
     -- Scrollable Sidebar Navigation Holder
     local NavHolder = Instance.new("ScrollingFrame")
-    NavHolder.Size = UDim2.new(1, -12, 1, -54)
-    NavHolder.Position = UDim2.new(0, 6, 0, 48)
+    NavHolder.Size = UDim2.new(1, -8, 1, -42)
+    NavHolder.Position = UDim2.new(0, 4, 0, 38)
     NavHolder.BackgroundTransparency = 1
     NavHolder.BorderSizePixel = 0
     NavHolder.ClipsDescendants = false
@@ -641,8 +641,8 @@ function RageLibrary:CreateWindow(config)
     -- Content Area (Right Side)
     local ContentArea = Instance.new("Frame")
     ContentArea.Name = "ContentArea"
-    ContentArea.Size = UDim2.new(1, -148, 1, -16)
-    ContentArea.Position = UDim2.new(0, 144, 0, 8)
+    ContentArea.Size = UDim2.new(1, -128, 1, -12)
+    ContentArea.Position = UDim2.new(0, 124, 0, 6)
     ContentArea.BackgroundTransparency = 1
     ContentArea.Parent = MainFrame
 
