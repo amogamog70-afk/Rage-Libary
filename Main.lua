@@ -362,7 +362,9 @@ local function refreshKeybindWidget()
     end
     local count = 0
     for _, item in ipairs(registeredKeybinds) do
-        if item.bindKey then
+        -- Show ONLY if there's an actual key bound (not nil and not "None")
+        local keyName = item.getKeyName()
+        if item.bindKey ~= nil and keyName ~= "None" then
             count = count + 1
             local Row = Instance.new("Frame")
             Row.Size = UDim2.new(1, 0, 0, 16)
@@ -386,7 +388,7 @@ local function refreshKeybindWidget()
             KeyLbl.Position = UDim2.new(1, -52, 0, 0)
             KeyLbl.BackgroundTransparency = 1
             KeyLbl.Font = Enum.Font.GothamBold
-            KeyLbl.Text = "[" .. item.getKeyName() .. "]"
+            KeyLbl.Text = "[" .. keyName .. "]"
             KeyLbl.TextColor3 = item.state and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
             KeyLbl.TextSize = 8.5
             KeyLbl.TextXAlignment = Enum.TextXAlignment.Right
@@ -1108,12 +1110,21 @@ function RageLibrary:CreateWindow(config)
                 local modes = {"Toggle", "Hold", "Always", "Unbind"}
                 local modeBtns = {}
 
+                local function getIsSelected(mName)
+                    if not bindKey then
+                        -- No key bound: only Unbind is active
+                        return mName == "Unbind"
+                    else
+                        -- Key is bound: show active mode (never Unbind)
+                        return mName ~= "Unbind" and bindMode == mName
+                    end
+                end
+
                 local function refreshModeBtns()
                     for mName, mBtn in pairs(modeBtns) do
-                        local isSelected = (bindMode == mName) or (mName == "Unbind" and not bindKey)
+                        local isSelected = getIsSelected(mName)
                         mBtn.BackgroundColor3 = isSelected and RageLibrary.Theme.CardHover or Color3.fromRGB(16, 16, 22)
                         mBtn.TextColor3 = isSelected and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
-                        -- checkmark prefix
                         mBtn.Text = (isSelected and "✓ " or "  ") .. mName
                     end
                 end
@@ -1135,14 +1146,12 @@ function RageLibrary:CreateWindow(config)
                     modeBtns[m] = MBtn
 
                     MBtn.MouseEnter:Connect(function()
-                        local isSelected = (bindMode == m) or (m == "Unbind" and not bindKey)
-                        if not isSelected then
+                        if not getIsSelected(m) then
                             smoothTween(MBtn, 0.1, { BackgroundColor3 = RageLibrary.Theme.CardHover, TextColor3 = RageLibrary.Theme.TextHover })
                         end
                     end)
                     MBtn.MouseLeave:Connect(function()
-                        local isSelected = (bindMode == m) or (m == "Unbind" and not bindKey)
-                        if not isSelected then
+                        if not getIsSelected(m) then
                             smoothTween(MBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(16, 16, 22), TextColor3 = RageLibrary.Theme.TextDim })
                         end
                     end)
