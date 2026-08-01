@@ -38,7 +38,7 @@ local RageLibrary = {
         CloseMenu = "rbxassetid://139295675611093",
         Notification = "rbxassetid://6895092003",
         Hitmark = "rbxassetid://160432334",
-        Slider = "rbxassetid://92708987611847",
+        Slider = "rbxassetid://136994329700115",
         Dropdown = "rbxassetid://103866342467024"
     },
     Icons = {
@@ -159,7 +159,7 @@ function RageLibrary:PlaySound(soundName)
         local s = Instance.new("Sound")
         s.SoundId = soundId
         s.Volume = 2.0
-        s.PlaybackSpeed = soundName == "Slider" and 0.5 or 1.0
+        s.PlaybackSpeed = 1.0
         s.Parent = SoundService
         s:Play()
         s.Ended:Wait()
