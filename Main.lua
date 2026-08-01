@@ -1537,8 +1537,6 @@ function RageLibrary:CreateWindow(config)
                 end)
 
                 local isDragging = false
-                local lastSoundVal = currentVal
-                local lastSoundTime = 0
                 local function updateSlider(inputX)
                     local width = TrackBg.AbsoluteSize.X
                     if width <= 0 then return end
@@ -1547,17 +1545,13 @@ function RageLibrary:CreateWindow(config)
                     ValBadge.Text = tostring(currentVal) .. suffix
                     Fill.Size = UDim2.new(r, 0, 1, 0)
                     ThumbKnob.Position = UDim2.new(r, -4, 0.5, -4)
-                    if currentVal ~= lastSoundVal and (tick() - lastSoundTime >= 0.08) then
-                        lastSoundVal = currentVal
-                        lastSoundTime = tick()
-                        RageLibrary:PlaySound("Slider")
-                    end
                     if cb then cb(currentVal) end
                 end
 
                 TrackBg.InputBegan:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                         isDragging = true
+                        RageLibrary:PlaySound("Slider")
                         updateSlider(input.Position.X)
                     end
                 end)
