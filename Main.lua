@@ -390,31 +390,55 @@ local function _isPointerOverGui(inputPos)
     return false
 end
 
-local _keybindHandlers = {} -- {onBegan=func, onEnded=func}
-local _anyRebindActive  = false  -- blocks dispatcher while any keybind is being recorded
-local _rebindCallbacks  = {}     -- queue of one-shot rebind listeners
+local _keybindHandlers = {}
+local _anyRebindActive = false
+local _rebindCallbacks = {}
 
 UserInputService.InputBegan:Connect(function(input, gpe)
-    -- Route rebind listeners first (they bypass gpe)
     if _anyRebindActive and #_rebindCallbacks > 0 then
         local cb = _rebindCallbacks[1]
         if cb then cb(input) end
-        return  -- don't let toggle handlers fire during rebind
+        return
     end
     if gpe then return end
-    for _, handler in ipairs(_keybindHandlers) do
-        handler.onBegan(input)
+    for _, item in ipairs(registeredKeybinds) do
+        if item.getBindKey and item.getBindKey() then
+            local key = item.getBindKey()
+            local isMatch = false
+            if typeof(key) == "EnumItem" then
+                if key.EnumType == Enum.KeyCode and input.KeyCode == key then
+                    isMatch = true
+                elseif key.EnumType == Enum.UserInputType and input.UserInputType == key then
+                    isMatch = true
+                end
+            end
+            if isMatch then
+                item.onInputBegan()
+            end
+        end
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if _anyRebindActive then return end  -- skip toggle release during rebind
-    for _, handler in ipairs(_keybindHandlers) do
-        handler.onEnded(input)
+    if _anyRebindActive then return end
+    for _, item in ipairs(registeredKeybinds) do
+        if item.getBindKey and item.getBindKey() then
+            local key = item.getBindKey()
+            local isMatch = false
+            if typeof(key) == "EnumItem" then
+                if key.EnumType == Enum.KeyCode and input.KeyCode == key then
+                    isMatch = true
+                elseif key.EnumType == Enum.UserInputType and input.UserInputType == key then
+                    isMatch = true
+                end
+            end
+            if isMatch then
+                item.onInputEnded()
+            end
+        end
     end
 end)
 
--- Register a one-shot rebind listener via the global dispatcher
 local function startRebindCapture(callback)
     _anyRebindActive = true
     _rebindCallbacks[1] = function(input)
@@ -439,76 +463,49 @@ end
 local _kbRowPool = {}
 
 local function refreshKeybindWidget()
-    -- Collect active items (only those with a real key bound)
-    local activeItems = {}
+    for _, child in ipairs(KBContainer:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+
+    local count = 0
     for _, item in ipairs(registeredKeybinds) do
-        local keyName = item.getKeyName()
-        local bKey = item.getBindKey and item.getBindKey() or item.bindKey
+        local bKey = item.getBindKey and item.getBindKey()
+        local keyName = item.getKeyName and item.getKeyName() or "None"
         if bKey ~= nil and keyName ~= "None" then
-            activeItems[#activeItems + 1] = { item = item, keyName = keyName }
+            count = count + 1
+            local Row = Instance.new("Frame")
+            Row.Size = UDim2.new(1, 0, 0, 16)
+            Row.BackgroundTransparency = 1
+            Row.Parent = KBContainer
+
+            local NameLbl = Instance.new("TextLabel")
+            NameLbl.Size = UDim2.new(1, -55, 1, 0)
+            NameLbl.Position = UDim2.new(0, 2, 0, 0)
+            NameLbl.BackgroundTransparency = 1
+            NameLbl.Font = Enum.Font.GothamMedium
+            NameLbl.Text = item.name
+            NameLbl.TextColor3 = item.getState() and RageLibrary.Theme.Text or RageLibrary.Theme.TextDim
+            NameLbl.TextSize = 8.5
+            NameLbl.TextTruncate = Enum.TextTruncate.AtEnd
+            NameLbl.TextXAlignment = Enum.TextXAlignment.Left
+            NameLbl.Parent = Row
+
+            local KeyLbl = Instance.new("TextLabel")
+            KeyLbl.Size = UDim2.new(0, 50, 1, 0)
+            KeyLbl.Position = UDim2.new(1, -52, 0, 0)
+            KeyLbl.BackgroundTransparency = 1
+            KeyLbl.Font = Enum.Font.GothamBold
+            KeyLbl.Text = "[" .. keyName .. "]"
+            KeyLbl.TextColor3 = item.getState() and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
+            KeyLbl.TextSize = 8.5
+            KeyLbl.TextXAlignment = Enum.TextXAlignment.Right
+            KeyLbl.Parent = Row
         end
     end
 
-    -- Show/hide/update pooled rows
-    local poolSize = #_kbRowPool
-    for i, entry in ipairs(activeItems) do
-        local row
-        if i <= poolSize then
-            -- Reuse existing row
-            row = _kbRowPool[i]
-            row.Visible = true
-        else
-            -- Create new row only when pool is exhausted
-            row = Instance.new("Frame")
-            row.Size = UDim2.new(1, 0, 0, 16)
-            row.BackgroundTransparency = 1
-            row.Parent = KBContainer
-
-            local nameLbl = Instance.new("TextLabel")
-            nameLbl.Name = "NameLbl"
-            nameLbl.Size = UDim2.new(1, -55, 1, 0)
-            nameLbl.Position = UDim2.new(0, 2, 0, 0)
-            nameLbl.BackgroundTransparency = 1
-            nameLbl.Font = Enum.Font.GothamMedium
-            nameLbl.TextSize = 8.5
-            nameLbl.TextTruncate = Enum.TextTruncate.AtEnd
-            nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-            nameLbl.Parent = row
-
-            local keyLbl = Instance.new("TextLabel")
-            keyLbl.Name = "KeyLbl"
-            keyLbl.Size = UDim2.new(0, 50, 1, 0)
-            keyLbl.Position = UDim2.new(1, -52, 0, 0)
-            keyLbl.BackgroundTransparency = 1
-            keyLbl.Font = Enum.Font.GothamBold
-            keyLbl.TextSize = 8.5
-            keyLbl.TextXAlignment = Enum.TextXAlignment.Right
-            keyLbl.Parent = row
-
-            _kbRowPool[#_kbRowPool + 1] = row
-        end
-
-        -- Update text/colors in-place (no destroy/create)
-        local item = entry.item
-        local itemState = item.getState and item.getState() or item.state
-        local nameLbl = row:FindFirstChild("NameLbl")
-        local keyLbl  = row:FindFirstChild("KeyLbl")
-        if nameLbl then
-            nameLbl.Text       = item.name
-            nameLbl.TextColor3 = itemState and RageLibrary.Theme.Text or RageLibrary.Theme.TextDim
-        end
-        if keyLbl then
-            keyLbl.Text       = "[" .. entry.keyName .. "]"
-            keyLbl.TextColor3 = itemState and RageLibrary.Theme.Accent or RageLibrary.Theme.TextDim
-        end
-    end
-
-    -- Hide unused pool rows
-    for i = #activeItems + 1, #_kbRowPool do
-        _kbRowPool[i].Visible = false
-    end
-
-    local targetHeight = math.max(26, 26 + #activeItems * 19)
+    local targetHeight = math.max(26, 26 + count * 19)
     smoothTween(KeybindWidget, DUR_FAST, { Size = UDim2.new(0, 160, 0, targetHeight) })
 end
 
@@ -1133,6 +1130,32 @@ function RageLibrary:CreateWindow(config)
                             end
                         end
                         return tostring(bindKey or "None")
+                    end,
+                    onInputBegan = function()
+                        if not bindKey then return end
+                        if bindMode == "Toggle" then
+                            state = not state
+                            refreshKeybindWidget()
+                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
+                            smoothTween(Knob, DUR_FAST, { Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5) })
+                            RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
+                            if callback then callback(state) end
+                        elseif bindMode == "Hold" then
+                            state = true
+                            refreshKeybindWidget()
+                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
+                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
+                            if callback then callback(true) end
+                        end
+                    end,
+                    onInputEnded = function()
+                        if bindKey and bindMode == "Hold" then
+                            state = false
+                            refreshKeybindWidget()
+                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
+                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(0, 2, 0.5, -5) })
+                            if callback then callback(false) end
+                        end
                     end
                 }
                 table.insert(registeredKeybinds, kbEntry)
@@ -1329,53 +1352,6 @@ function RageLibrary:CreateWindow(config)
                         end
                     end
                 end)
-
-                local function isMatchingInput(input)
-                    if typeof(bindKey) == "EnumItem" then
-                        if bindKey.EnumType == Enum.KeyCode then
-                            return input.KeyCode == bindKey
-                        elseif bindKey.EnumType == Enum.UserInputType then
-                            if _isPointerOverGui(input.Position) then return false end
-                            return input.UserInputType == bindKey
-                        end
-                    end
-                    return false
-                end
-
-                -- Use global dispatcher (1 connection total, not 2 per toggle)
-                registerKeybindHandler(
-                    function(input) -- onBegan
-                        if not bindKey then return end
-                        if not isMatchingInput(input) then return end
-                        if bindMode == "Toggle" then
-                            state = not state
-                            kbEntry.state = state
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = state and RageLibrary.Theme.Accent or RageLibrary.Theme.Header })
-                            smoothTween(Knob, DUR_FAST, { Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5) })
-                            RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
-                            if callback then callback(state) end
-                        elseif bindMode == "Hold" then
-                            state = true
-                            kbEntry.state = state
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Accent })
-                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(1, -12, 0.5, -5) })
-                            if callback then callback(true) end
-                        end
-                    end,
-                    function(input) -- onEnded
-                        if bindKey and isMatchingInput(input) and bindMode == "Hold" then
-                            state = false
-                            kbEntry.state = state
-                            refreshKeybindWidget()
-                            smoothTween(SwitchBg, DUR_FAST, { BackgroundColor3 = RageLibrary.Theme.Header })
-                            smoothTween(Knob, DUR_FAST, { Position = UDim2.new(0, 2, 0.5, -5) })
-                            if callback then callback(false) end
-                        end
-                    end
-                )
-
 
                 -- Toggle Hover Animation
                 ToggleRow.MouseEnter:Connect(function()
