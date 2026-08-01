@@ -884,13 +884,11 @@ function RageLibrary:CreateWindow(config)
                 local cpColor = type(cfg) == "table" and (cfg.Colorpicker or cfg.ColorPicker or cfg.Color) or nil
                 local cpCallback = type(cfg) == "table" and (cfg.ColorCallback or cfg.ColorpickerCallback) or nil
 
-                local ToggleRow = Instance.new("TextButton")
+                local ToggleRow = Instance.new("Frame")
                 ToggleRow.Size = UDim2.new(1, 0, 0, 30)
                 ToggleRow.BackgroundColor3 = RageLibrary.Theme.Block
                 ToggleRow.BackgroundTransparency = 1
                 ToggleRow.BorderSizePixel = 0
-                ToggleRow.AutoButtonColor = false
-                ToggleRow.Text = ""
                 ToggleRow.Parent = ItemsHolder
                 addCorner(ToggleRow, 6)
                 local ToggleStroke = addStroke(ToggleRow, RageLibrary.Theme.Stroke, 1)
@@ -1374,8 +1372,8 @@ function RageLibrary:CreateWindow(config)
                     smoothTween(ToggleStroke, DUR_FAST, { Color = RageLibrary.Theme.Stroke })
                 end)
 
-                ToggleRow.MouseButton1Click:Connect(function()
-                    if ignoreToggleRowClick or bindMode == "Always" then return end
+                local function toggleState()
+                    if bindMode == "Always" then return end
                     state = not state
                     if kbEntry then
                         kbEntry.state = state
@@ -1385,6 +1383,26 @@ function RageLibrary:CreateWindow(config)
                     smoothTween(Knob, DUR_FAST, { Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5) })
                     RageLibrary:PlaySound(state and "ToggleOn" or "ToggleOff")
                     if callback then callback(state) end
+                end
+
+                ToggleRow.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        -- Check if click was over ControlsHolder (KeyBadge / ColorBadge / Switch)
+                        local mPos = input.Position
+                        local cPos = ControlsHolder.AbsolutePosition
+                        local cSize = ControlsHolder.AbsoluteSize
+                        if mPos.X >= cPos.X and mPos.X <= cPos.X + cSize.X and
+                           mPos.Y >= cPos.Y and mPos.Y <= cPos.Y + cSize.Y then
+                            return -- Clicked inside ControlsHolder, KeyBadge handles it!
+                        end
+                        toggleState()
+                    end
+                end)
+
+                SwitchBg.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        toggleState()
+                    end
                 end)
 
                 updateCardSize()
