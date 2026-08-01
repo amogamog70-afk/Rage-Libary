@@ -381,9 +381,17 @@ local function _isPointerOverGui(inputPos)
     return false
 end
 
-local _keybindHandlers = {} -- {inputBegan=func, inputEnded=func, getId=func}
+local _keybindHandlers = {} -- {onBegan=func, onEnded=func}
+local _anyRebindActive  = false  -- blocks dispatcher while any keybind is being recorded
+local _rebindCallbacks  = {}     -- queue of one-shot rebind listeners
 
 UserInputService.InputBegan:Connect(function(input, gpe)
+    -- Route rebind listeners first (they bypass gpe)
+    if _anyRebindActive and #_rebindCallbacks > 0 then
+        local cb = _rebindCallbacks[1]
+        if cb then cb(input) end
+        return  -- don't let toggle handlers fire during rebind
+    end
     if gpe then return end
     for _, handler in ipairs(_keybindHandlers) do
         handler.onBegan(input)
@@ -391,10 +399,26 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 end)
 
 UserInputService.InputEnded:Connect(function(input)
+    if _anyRebindActive then return end  -- skip toggle release during rebind
     for _, handler in ipairs(_keybindHandlers) do
         handler.onEnded(input)
     end
 end)
+
+-- Register a one-shot rebind listener via the global dispatcher
+local function startRebindCapture(callback)
+    _anyRebindActive = true
+    _rebindCallbacks[1] = function(input)
+        _rebindCallbacks[1] = nil
+        _anyRebindActive = false
+        callback(input)
+    end
+end
+
+local function cancelRebindCapture()
+    _rebindCallbacks[1] = nil
+    _anyRebindActive = false
+end
 
 local function registerKeybindHandler(onBegan, onEnded)
     table.insert(_keybindHandlers, { onBegan = onBegan, onEnded = onEnded or function() end })
@@ -1137,13 +1161,15 @@ function RageLibrary:CreateWindow(config)
                     KeyBadge.Text = "[...]"
                     KeyBadge.TextColor3 = RageLibrary.Theme.TextHover
 
-                    task.delay(0.1, function()
-                        local conn
-                        conn = UserInputService.InputBegan:Connect(function(input)
+                    -- Wait one frame so the badge click itself doesn't get captured
+                    task.delay(0.12, function()
+                        startRebindCapture(function(input)
+                            isRebinding = false
                             local target = nil
                             if input.UserInputType == Enum.UserInputType.Keyboard then
-                                if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Backspace and input.KeyCode ~= Enum.KeyCode.Delete then
-                                    target = input.KeyCode
+                                local kc = input.KeyCode
+                                if kc ~= Enum.KeyCode.Unknown and kc ~= Enum.KeyCode.Escape and kc ~= Enum.KeyCode.Backspace and kc ~= Enum.KeyCode.Delete then
+                                    target = kc
                                 end
                             elseif input.UserInputType == Enum.UserInputType.MouseButton1 or
                                    input.UserInputType == Enum.UserInputType.MouseButton2 or
@@ -1153,15 +1179,15 @@ function RageLibrary:CreateWindow(config)
 
                             if target then
                                 bindKey = target
-                                updateBadgeText()
-                                conn:Disconnect()
-                                isRebinding = false
-                            elseif input.KeyCode == Enum.KeyCode.Escape or input.KeyCode == Enum.KeyCode.Backspace or input.KeyCode == Enum.KeyCode.Delete then
+                                -- If mode was Unbind (no key), restore Toggle if no preferred mode
+                                if bindMode == nil or bindMode == "" then
+                                    bindMode = "Toggle"
+                                end
+                            else
+                                -- Escape / Backspace / Delete = clear key
                                 bindKey = nil
-                                updateBadgeText()
-                                conn:Disconnect()
-                                isRebinding = false
                             end
+                            updateBadgeText()
                         end)
                     end)
                 end)
@@ -1235,7 +1261,7 @@ function RageLibrary:CreateWindow(config)
                     MBtn.MouseButton1Click:Connect(function()
                         if m == "Unbind" then
                             bindKey = nil
-                            bindMode = "Toggle"
+                            -- Keep bindMode so if user re-assigns a key, mode is preserved
                         else
                             bindMode = m
                         end
